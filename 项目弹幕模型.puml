@@ -1,5 +1,4 @@
 @startuml
-skinparam handwritten true
 start
 fork
     :初始化一个优先级队列<font size="12" color="green">queue</font>，用来
