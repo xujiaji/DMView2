@@ -9,12 +9,14 @@ import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import com.xujiaji.dmlib2.entity.BaseEntity;
-import java.util.ArrayList;
+
+import com.xujiaji.dmlib2.entity.BaseDmEntity;
+
 import java.util.List;
 import java.util.PriorityQueue;
 
@@ -25,10 +27,11 @@ import java.util.PriorityQueue;
 
 public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 {
+    public static final String TAG = "DMSurfaceView";
     private SurfaceHolder mSurfaceHolder;
-    private PriorityQueue<BaseEntity> mQueue = new PriorityQueue<>();
-    private List<BaseEntity> mRunEntity = new ArrayList<>();
-    private List<BaseEntity> mIdleEntity = new ArrayList<>();
+    private PriorityQueue<BaseDmEntity> mQueue = new PriorityQueue<>();
+    private RefreshDMList mRefreshDMList = new RefreshDMList();
+    private RecoveredDMList mDMRecoveredList = new RecoveredDMList();
 
     public DMSurfaceView(Context context)
     {
@@ -47,8 +50,48 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder.addCallback(this);
         setZOrderOnTop(true);
         mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
+        addListener();
     }
 
+    private void addListener()
+    {
+        mRefreshDMList.setOnRefreshListener(new RefreshDMList.OnRefreshListener()
+        {
+            @Override
+            public void refreshDM(List<BaseDmEntity> list)
+            {
+                update(list);
+            }
+
+            @Override
+            public void overDM(BaseDmEntity dmEntity)
+            {
+                mDMRecoveredList.add(dmEntity);
+            }
+        });
+    }
+
+    private void update(List<BaseDmEntity> list)
+    {
+        Canvas canvas = mSurfaceHolder.lockCanvas();
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        canvas.drawColor(Color.RED);
+        Paint paint = new Paint();
+        paint.setStrokeWidth(2);
+        paint.setColor(Color.WHITE);
+        for (BaseDmEntity dmEntity : list)
+        {
+            PointF position = dmEntity.getPositions().poll();
+            if (position == null) continue;
+            Log.e(TAG, "("+ position.x + ", " + position.y + ")");
+            canvas.drawPoint(position.x, position.y, paint);
+            canvas.drawBitmap(dmEntity.getBitmap(), position.x, position.y, null);
+            PointCreator.getInstance().reset(position);
+        }
+
+        mSurfaceHolder.unlockCanvasAndPost(canvas);
+    }
 
 
     @Override
@@ -60,25 +103,13 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
-
+        addElem(getContext());
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
 
-    }
-
-    public Canvas lockCanvas()
-    {
-        Canvas canvas = mSurfaceHolder.lockCanvas();
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-        return canvas;
-    }
-
-    public void unlockCanvas(Canvas canvas)
-    {
-        mSurfaceHolder.unlockCanvasAndPost(canvas);
     }
 
 
@@ -90,13 +121,8 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         View view = LayoutInflater.from(context).inflate(R.layout.barrage, null);
         PointF start = new PointF(900, 100);
         PointF end = new PointF(200, 100);
-        BaseEntity entity = new BaseEntity(0, view, start, end);
+        BaseDmEntity entity = new BaseDmEntity(0, view, start, end);
         mQueue.offer(entity);
-//        for (BaseEntity b : mQueue)
-//        {
-//            System.out.println(" " + b);
-//            System.out.println(" " + mQueue.peek());
-//        }
         if (mQueue.size() == 1)
         {
             start();
@@ -106,32 +132,10 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private void start()
     {
         if (mQueue.peek() == null) return;
-        BaseEntity entity = mQueue.remove();
+        BaseDmEntity entity = mQueue.remove();
+        mRefreshDMList.addDM(entity);
         entity.start();
         start();
     }
 
-
-    /***
-     * 绘制元素
-     */
-    public void drawCurElem(Bitmap bitmap, PointF pointPosition)
-    {
-        Canvas canvas = lockCanvas();
-        canvas.drawColor(Color.RED);
-        Paint paint = new Paint();
-        paint.setStrokeWidth(2);
-        paint.setColor(Color.WHITE);
-        canvas.drawPoint(pointPosition.x, pointPosition.y, paint);
-
-        canvas.drawBitmap(bitmap, pointPosition.x, pointPosition.y, null);
-        unlockCanvas(canvas);
-    }
-
-    public static Bitmap convertViewToBitmap(View view){
-        view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-        view.buildDrawingCache();
-        return view.getDrawingCache();
-    }
 }

@@ -8,21 +8,26 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 
 import com.xujiaji.dmlib2.DM;
+import com.xujiaji.dmlib2.PointCreator;
 import com.xujiaji.dmlib2.PointFEvaluator;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * 弹幕实体类
  * Created by jiaji on 2018/2/26.
  */
 
-public class BaseEntity implements Comparable<BaseEntity>
+public class BaseDmEntity implements Comparable<BaseDmEntity>
 {
     private int _id;
     private int priority;
     private Bitmap bitmap;
+    private Queue<PointF> positions = new LinkedList<>();
     private ValueAnimator anim;
 
-    public BaseEntity(int id, View itemView, PointF start, PointF end)
+    public BaseDmEntity(int id, View itemView, PointF start, PointF end)
     {
         this._id = id;
         bitmap = DM.convertViewToBitmap(itemView);
@@ -34,10 +39,22 @@ public class BaseEntity implements Comparable<BaseEntity>
             @Override
             public void onAnimationUpdate(ValueAnimator animation)
             {
-                PointF value = (PointF) animation.getAnimatedValue();
-//                DM.getInstance().drawCurElem(bitmap, value);
+                PointF position = (PointF) animation.getAnimatedValue();
+                PointF p = PointCreator.getInstance().newPointF();
+                p.set(position);
+                positions.offer(p);
             }
         });
+    }
+
+    public Queue<PointF> getPositions()
+    {
+        return positions;
+    }
+
+    public Bitmap getBitmap()
+    {
+        return bitmap;
     }
 
     /**
@@ -50,7 +67,7 @@ public class BaseEntity implements Comparable<BaseEntity>
     }
 
     @Override
-    public int compareTo(@NonNull BaseEntity o)
+    public int compareTo(@NonNull BaseDmEntity o)
     {
         if (this.priority > o.priority)
         {

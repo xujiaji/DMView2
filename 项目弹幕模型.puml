@@ -16,7 +16,7 @@ fork again
     :初始化一个列表<font size="12" color="orange">refreshDMList</font>，用来存
     放需要更新到画布上的弹幕;
     while (监听到有数据) is (yes)
-        :每隔多少秒刷新一下展示的画面;
+        :每隔多少秒刷新一下展示的画r面;
     end while(no)
     stop
 fork again
@@ -43,7 +43,7 @@ split
 ......|
     :offer(**dm**)放入队列<font size="12" color="green">queue</font>;
 split again
-:某一个play了的弹幕**dm**;
+:某一个开始play的弹幕**dm**;
     while(该弹幕**dm**是否正在运行?) is (yes)
         :更新该弹幕**dm**的位置信息;
     end while(no)
