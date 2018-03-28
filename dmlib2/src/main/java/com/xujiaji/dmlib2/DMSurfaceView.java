@@ -1,5 +1,8 @@
 package com.xujiaji.dmlib2;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,12 +11,14 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
+import android.support.v4.view.animation.LinearOutSlowInInterpolator;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.LinearInterpolator;
 
 import com.xujiaji.dmlib2.entity.BaseDmEntity;
 
@@ -30,8 +35,11 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     public static final String TAG = "DMSurfaceView";
     private SurfaceHolder mSurfaceHolder;
     private PriorityQueue<BaseDmEntity> mQueue = new PriorityQueue<>();
-    private RefreshDMList mRefreshDMList = new RefreshDMList();
-    private RecoveredDMList mDMRecoveredList = new RecoveredDMList();
+    private Bitmap mOneBitmap, mTwoBitmap;
+    private Canvas mOneCanvas, mTwoCanvas;
+    private int mWidth, mHeight;
+    private ValueAnimator mValueAnim;
+    private int mOneLeft, mTwoLeft;
 
     public DMSurfaceView(Context context)
     {
@@ -50,26 +58,8 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder.addCallback(this);
         setZOrderOnTop(true);
         mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
-        addListener();
     }
 
-    private void addListener()
-    {
-        mRefreshDMList.setOnRefreshListener(new RefreshDMList.OnRefreshListener()
-        {
-            @Override
-            public void refreshDM(List<BaseDmEntity> list)
-            {
-                update(list);
-            }
-
-            @Override
-            public void overDM(BaseDmEntity dmEntity)
-            {
-                mDMRecoveredList.add(dmEntity);
-            }
-        });
-    }
 
     private void update(List<BaseDmEntity> list)
     {
@@ -80,15 +70,14 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         Paint paint = new Paint();
         paint.setStrokeWidth(2);
         paint.setColor(Color.WHITE);
-        for (BaseDmEntity dmEntity : list)
-        {
-            PointF position = dmEntity.getPositions().poll();
-            if (position == null) continue;
-            Log.e(TAG, "("+ position.x + ", " + position.y + ")");
-            canvas.drawPoint(position.x, position.y, paint);
-            canvas.drawBitmap(dmEntity.getBitmap(), position.x, position.y, null);
-            PointCreator.getInstance().reset(position);
-        }
+//        for (BaseDmEntity dmEntity : list)
+//        {
+//            PointF position = dmEntity.getPositions().poll();
+//            if (position == null) continue;
+//            Log.e(TAG, "("+ position.x + ", " + position.y + ")");
+//            canvas.drawPoint(position.x, position.y, paint);
+//            canvas.drawBitmap(dmEntity.getBitmap(), position.x, position.y, null);
+//        }
 
         mSurfaceHolder.unlockCanvasAndPost(canvas);
     }
@@ -103,13 +92,79 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
+        mOneBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        mTwoBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        mOneCanvas = new Canvas(mOneBitmap);
+        mTwoCanvas = new Canvas(mTwoBitmap);
+//        mOneCanvas.drawColor(Color.RED);
+//        mTwoCanvas.drawColor(Color.GREEN);
+
+        this.mWidth = width;
+        this.mHeight = height;
+
+        mTwoLeft = 0;
+        mOneLeft = mWidth;
+
+        mValueAnim = ValueAnimator.ofInt(0, mWidth)
+                .setDuration(2000);
+        mValueAnim.setInterpolator(new LinearInterpolator());
+        mValueAnim.setRepeatCount(-1);
+        mValueAnim.setRepeatMode(ValueAnimator.RESTART);
+        mValueAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener()
+        {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation)
+            {
+                int value = (int) animation.getAnimatedValue();
+                startRun(value);
+            }
+        });
+
+        mValueAnim.addListener(new AnimatorListenerAdapter()
+        {
+            @Override
+            public void onAnimationRepeat(Animator animation)
+            {
+                if (mTwoLeft == 0)
+                {
+                    mTwoLeft = mWidth;
+                    mOneLeft = 0;
+                } else
+                {
+                    mTwoLeft = 0;
+                    mOneLeft = mWidth;
+                }
+            }
+        });
+
+        mValueAnim.start();
+
         addElem(getContext());
+    }
+
+    private void startRun(int value)
+    {
+        Canvas canvas = mSurfaceHolder.lockCanvas();
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        canvas.drawBitmap(mOneBitmap, mOneLeft - value, 0, null);
+        canvas.drawBitmap(mTwoBitmap, mTwoLeft - value, 0, null);
+
+        if (mQueue.peek() != null)
+        {
+            BaseDmEntity entity = mQueue.remove();
+            mOneCanvas.drawBitmap(entity.getBitmap(), 0, 0, null);
+        }
+
+        mSurfaceHolder.unlockCanvasAndPost(canvas);
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
-
+        DM.restoreBitmap(mOneBitmap);
+        DM.restoreBitmap(mTwoBitmap);
     }
 
 
@@ -123,19 +178,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         PointF end = new PointF(200, 100);
         BaseDmEntity entity = new BaseDmEntity(0, view, start, end);
         mQueue.offer(entity);
-        if (mQueue.size() == 1)
-        {
-            start();
-        }
-    }
 
-    private void start()
-    {
-        if (mQueue.peek() == null) return;
-        BaseDmEntity entity = mQueue.remove();
-        mRefreshDMList.addDM(entity);
-        entity.start();
-        start();
     }
 
 }

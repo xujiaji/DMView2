@@ -30,5 +30,11 @@ public class DM
         view.buildDrawingCache();
         return view.getDrawingCache();
     }
+
+    public static void restoreBitmap(Bitmap bitmap)
+    {
+        if (bitmap == null || bitmap.isRecycled()) return;
+        bitmap.recycle();
+    }
 }
 
