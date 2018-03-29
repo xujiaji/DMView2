@@ -3,6 +3,7 @@ package com.xujiaji.dmlib2.entity;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 
 import com.xujiaji.dmlib2.DM;
