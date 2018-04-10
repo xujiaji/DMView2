@@ -32,6 +32,8 @@ import java.util.Random;
 public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback, DM
 {
     public static final String TAG = "DMSurfaceView";
+    private Direction mDirection = Direction.RIGHT_LEFT;
+    private int mDuration = 3000;
     private SurfaceHolder mSurfaceHolder;
     private PriorityQueue<BaseDmEntity> mQueue = new PriorityQueue<>();
     private boolean isActive;//是否是活跃状态
@@ -90,11 +92,26 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         this.mWidth = width;
         this.mHeight = height;
 
-        mTwoLeft = 0;
-        mOneLeft = mWidth;
-
-        mValueAnim = ValueAnimator.ofInt(0, mWidth)
-                .setDuration(3000);
+        switch (mDirection)
+        {
+            case DOWN_UP:
+                mValueAnim = ValueAnimator.ofInt(0, mHeight).setDuration(mDuration);
+                break;
+            case UP_DOWN:
+                mValueAnim = ValueAnimator.ofInt(0, mHeight).setDuration(mDuration);
+                break;
+            case LEFT_RIGHT:
+                mTwoLeft = -mWidth;
+                mOneLeft = 0;
+                mValueAnim = ValueAnimator.ofInt(0, mWidth).setDuration(mDuration);
+                break;
+            case RIGHT_LEFT:
+                mTwoLeft = 0;
+                mOneLeft = mWidth;
+                mValueAnim = ValueAnimator.ofInt(0, mWidth).setDuration(mDuration);
+                break;
+            default:
+        }
         mValueAnim.setInterpolator(new LinearInterpolator());
         mValueAnim.setRepeatCount(-1);
         mValueAnim.setRepeatMode(ValueAnimator.RESTART);
@@ -175,8 +192,20 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
             } else
             {
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                canvas.drawBitmap(mOneBitmap, mOneLeft - value, 0, null);
-                canvas.drawBitmap(mTwoBitmap, mTwoLeft - value, 0, null);
+                switch (mDirection)
+                {
+                    case RIGHT_LEFT:
+                        canvas.drawBitmap(mOneBitmap, mOneLeft - value, 0, null);
+                        canvas.drawBitmap(mTwoBitmap, mTwoLeft - value, 0, null);
+                        break;
+                    case LEFT_RIGHT:
+                        break;
+                    case UP_DOWN:
+                        break;
+                    case DOWN_UP:
+                        break;
+                    default:
+                }
             }
         } catch (Exception e)
         {

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="DMSurfaceView">
+        <attr name="direction">
+            <enum name="right_left" value="1"/>
+            <enum name="left_right" value="2"/>
+            <enum name="up_down"    value="3"/>
+            <enum name="down_up"    value="4"/>
+        </attr>
+    </declare-styleable>
+</resources>
