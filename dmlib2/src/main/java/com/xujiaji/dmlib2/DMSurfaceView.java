@@ -29,11 +29,12 @@ import java.util.Random;
  * Created by jiaji on 2018/2/19.
  */
 
-public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
+public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback, DM
 {
     public static final String TAG = "DMSurfaceView";
     private SurfaceHolder mSurfaceHolder;
     private PriorityQueue<BaseDmEntity> mQueue = new PriorityQueue<>();
+    private boolean isActive;//是否是活跃状态
     private Bitmap mOneBitmap;
     private Bitmap mTwoBitmap;
     private Bitmap mDrawDMBitmap;
@@ -67,38 +68,15 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
     }
 
-
-    private void update(List<BaseDmEntity> list)
-    {
-        Canvas canvas = mSurfaceHolder.lockCanvas();
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-
-        canvas.drawColor(Color.RED);
-        Paint paint = new Paint();
-        paint.setStrokeWidth(2);
-        paint.setColor(Color.WHITE);
-//        for (BaseDmEntity dmEntity : list)
-//        {
-//            PointF position = dmEntity.getPositions().poll();
-//            if (position == null) continue;
-//            Log.e(TAG, "("+ position.x + ", " + position.y + ")");
-//            canvas.drawPoint(position.x, position.y, paint);
-//            canvas.drawBitmap(dmEntity.getBitmap(), position.x, position.y, null);
-//        }
-
-        mSurfaceHolder.unlockCanvasAndPost(canvas);
-    }
-
-
     @Override
     public void surfaceCreated(SurfaceHolder holder)
     {
-
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
+        isActive = true;
         mOneBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         mTwoBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         mDrawDMBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -135,6 +113,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
             @Override
             public void onAnimationRepeat(Animator animation)
             {
+                LogUtil.i("onAnimationRepeat");
                 mUseWidth = 0;
                 mUseHeight = 0;
                 if (mTwoLeft == 0)//动画重新开始时，判断如果mTwoBitmap是第一张图片，那么说明该次mTwoBitmap已展示完毕
@@ -150,6 +129,8 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                     exchangeOneHandle();
                 }
                 mDrawDMCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);//清理后台绘制弹幕的画布
+
+                addFromQueue(mQueue);
             }
         });
 
@@ -184,57 +165,77 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     private void startRun(int value)
     {
-        Canvas canvas = mSurfaceHolder.lockCanvas();
-        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        Canvas canvas = null;
+        try
+        {
+            canvas = mSurfaceHolder.lockCanvas();
+            if (canvas == null)
+            {
+                mValueAnim.cancel();
+            } else
+            {
+                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+                canvas.drawBitmap(mOneBitmap, mOneLeft - value, 0, null);
+                canvas.drawBitmap(mTwoBitmap, mTwoLeft - value, 0, null);
+            }
+        } catch (Exception e)
+        {
+            LogUtil.i(e.getMessage());
+        } finally
+        {
+            if (canvas != null)
+            {
+                mSurfaceHolder.unlockCanvasAndPost(canvas);
+            }
+        }
 
-        canvas.drawBitmap(mOneBitmap, mOneLeft - value, 0, null);
-        canvas.drawBitmap(mTwoBitmap, mTwoLeft - value, 0, null);
-
-//        if (mQueue.peek() != null)
-//        {
-//            BaseDmEntity entity = mQueue.remove();
-//            mOneCanvas.drawBitmap(entity.getBitmap(), 0, 0, null);
-//        }
-
-        mSurfaceHolder.unlockCanvasAndPost(canvas);
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
-        mValueAnim.end();
-        DM.restoreBitmap(mOneBitmap);
-        DM.restoreBitmap(mTwoBitmap);
-        DM.restoreBitmap(mDrawDMBitmap);
+        isActive = false;
+        mValueAnim.cancel();
+        Util.restoreBitmap(mOneBitmap);
+        Util.restoreBitmap(mTwoBitmap);
+        Util.restoreBitmap(mDrawDMBitmap);
     }
 
     Random random = new Random();
-    /**
-     * 加入一个元素
-     */
-    public void addElem(Context context)
-    {
-        View view = LayoutInflater.from(context).inflate(R.layout.barrage, null);
-        PointF start = new PointF(900, 100);
-        PointF end = new PointF(200, 100);
-        BaseDmEntity entity = new BaseDmEntity(0, view, start, end);
-//        mQueue.offer(entity);
 
+    @Override
+    public synchronized void add(View templateView)
+    {
+        if (!isActive) return;
+        BaseDmEntity entity = new BaseDmEntity(templateView);
+        add(entity);
+    }
+
+    @Override
+    public synchronized void add(BaseDmEntity entity)
+    {
+        if (!isActive) return;
+//        LogUtil.i("num = " + num + ", mUseWidth = " + mUseWidth + ", mUseHeight = " + mUseHeight + " --- mWidth = " + mWidth + ", mHeight = " + mHeight);
         Bitmap bitmap = entity.getBitmap();
         int left = 0;
         int top = 0;
-        if (mUseWidth == 0 && mUseHeight == 0)
+        if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
         {
             left = random.nextInt(100);
             top = 0;
-        } else if (mWidth - mUseWidth > bitmap.getWidth())
+        } else if (mWidth - mUseWidth > bitmap.getWidth())//右侧空间足的情况
         {
             left = mUseWidth;
             top = mUseHeight - bitmap.getHeight();
-        } else if (mWidth - mUseWidth < bitmap.getWidth())
+        } else if (mWidth - mUseWidth < bitmap.getWidth() && mHeight - mUseHeight > bitmap.getHeight())//右侧空间不足，底部空间足到情况
         {
             left = random.nextInt(100);
             top = mUseHeight;
+        } else//此时画布空间不足了，将这个弹幕添加到容器当中
+        {
+//            LogUtil.i("此时画布空间不足了，将这个弹幕添加到容器当中， num = " + num);
+            mQueue.offer(entity);
+            return;
         }
 
         mUseWidth = left + bitmap.getWidth() + random.nextInt(100);
@@ -242,4 +243,26 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
     }
 
+    @Override
+    public void addFromQueue(PriorityQueue<BaseDmEntity> queue)
+    {
+        if (!isActive) return;
+        LogUtil.i("addFromQueue method");
+        if (queue.peek() != null)
+        {
+            BaseDmEntity entity = queue.remove();
+            if (mHeight - mUseHeight > entity.getBitmap().getHeight())
+            {
+                add(entity);
+            } else
+            {
+                return;
+            }
+        }
+
+        if (queue.peek() != null)
+        {
+            addFromQueue(queue);
+        }
+    }
 }

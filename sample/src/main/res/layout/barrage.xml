@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/head_size"
@@ -19,7 +20,6 @@
         android:includeFontPadding="false"
         android:text="test"
         android:textColor="#ff8813"
-        android:background="@android:color/black"
         android:textSize="12sp" />
 
     <TextView
@@ -37,9 +37,11 @@
         android:layout_gravity="bottom"
         android:textSize="13sp" />
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imgBarrageHead"
         android:layout_width="@dimen/head_size"
         android:layout_height="@dimen/head_size"
-        android:src="@drawable/boy_head"/>
+        android:src="@drawable/boy_head"
+        app:civ_border_width="1dp"
+        app:civ_border_color="#FF000000"/>
 </FrameLayout>

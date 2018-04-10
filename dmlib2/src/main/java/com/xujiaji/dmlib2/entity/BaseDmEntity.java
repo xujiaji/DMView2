@@ -3,10 +3,9 @@ package com.xujiaji.dmlib2.entity;
 import android.graphics.Bitmap;
 import android.graphics.PointF;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 
-import com.xujiaji.dmlib2.DM;
+import com.xujiaji.dmlib2.Util;
 
 /**
  * 弹幕实体类
@@ -15,14 +14,12 @@ import com.xujiaji.dmlib2.DM;
 
 public class BaseDmEntity implements Comparable<BaseDmEntity>
 {
-    private int _id;
-    private int priority;
     private Bitmap bitmap;
+    private int priority;
 
-    public BaseDmEntity(int id, View itemView, PointF start, PointF end)
+    public BaseDmEntity(View itemView)
     {
-        this._id = id;
-        bitmap = DM.convertViewToBitmap(itemView);
+        bitmap = Util.convertViewToBitmap(itemView);
     }
 
     public Bitmap getBitmap()

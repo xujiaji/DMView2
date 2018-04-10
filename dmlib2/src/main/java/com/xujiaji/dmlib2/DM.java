@@ -1,43 +1,25 @@
 package com.xujiaji.dmlib2;
-
-
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.view.View;
+import com.xujiaji.dmlib2.entity.BaseDmEntity;
+import java.util.PriorityQueue;
 
 /**
- * 绘制帮助类
- * Created by jiaji on 2018/2/19.
+ * 弹幕接口
  */
-
-public class DM
+public interface DM
 {
 
-    private static DM mHelper;
-    public static DM getInstance()
-    {
-        if (mHelper == null)
-        {
-            throw new RuntimeException("DM did not initialize.");
-        } else
-        {
-            return mHelper;
-        }
-    }
+    /**
+     * 添加一个弹幕
+     * @param templateView 模板View
+     */
+    void add(View templateView);
 
-    public static Bitmap convertViewToBitmap(View view) {
-        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-        Bitmap bitmap= Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        view.draw(canvas);
-        return bitmap;
-    }
+    void add(BaseDmEntity entity);
 
-    public static void restoreBitmap(Bitmap bitmap)
-    {
-        if (bitmap == null || bitmap.isRecycled()) return;
-        bitmap.recycle();
-    }
+    /**
+     * 将队列中未画在画布上到弹幕展示出来
+     * @param queue 将保存在队列中到弹幕展示出来
+     */
+    void addFromQueue(PriorityQueue<BaseDmEntity> queue);
 }
-

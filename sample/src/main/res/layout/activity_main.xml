@@ -11,12 +11,11 @@
     <com.xujiaji.dmlib2.DMSurfaceView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="200dp"/>
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="onClickAddDM"
-        android:text="添加一个弹幕"/>
+        android:text="添加十个弹幕"/>
 </LinearLayout>
