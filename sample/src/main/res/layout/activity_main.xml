@@ -11,7 +11,8 @@
     <com.xujiaji.dmlib2.DMSurfaceView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
-        android:layout_height="200dp"/>
+        app:direction="down_up"
+        android:layout_height="200dp" />
 
     <Button
         android:layout_width="match_parent"

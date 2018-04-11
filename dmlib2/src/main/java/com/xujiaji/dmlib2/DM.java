@@ -17,11 +17,4 @@ public interface DM
 
     void add(BaseDmEntity entity);
 
-    /**
-     * 将队列中未画在画布上到弹幕展示出来
-     * @param queue 将保存在队列中到弹幕展示出来
-     */
-    void addFromQueue(PriorityQueue<BaseDmEntity> queue);
-
-
 }

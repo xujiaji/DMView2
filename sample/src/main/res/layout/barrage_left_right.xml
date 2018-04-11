@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/head_size"
+    android:layout_marginBottom="2dp"
+    android:layout_marginTop="2dp"
+    android:padding="4dp">
+
+
+    <TextView
+        android:id="@+id/tvBarrageName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginRight="32dp"
+        android:layout_marginEnd="32dp"
+        android:includeFontPadding="false"
+        android:layout_gravity="right"
+        android:padding="0dp"
+        android:text="test"
+        android:textColor="#ff8813"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvBarrageMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@drawable/shape_barrage_bg"
+        android:paddingEnd="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingStart="16dp"
+        android:text="sdafjlsaj"
+        android:textColor="#ff0000"
+        android:textSize="13sp" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgBarrageHead"
+        android:layout_width="@dimen/head_size"
+        android:layout_height="@dimen/head_size"
+        android:layout_gravity="right"
+        android:src="@drawable/boy_head"
+        app:civ_border_color="#FF000000"
+        app:civ_border_width="1dp" />
+</FrameLayout>

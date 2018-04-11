@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -31,7 +32,6 @@ import java.util.Random;
 
 public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback, DM
 {
-    public static final String TAG = "DMSurfaceView";
     private Direction mDirection = Direction.RIGHT_LEFT;
     private int mDuration = 3000;
     private SurfaceHolder mSurfaceHolder;
@@ -49,7 +49,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     private int mWidth, mHeight;
     private ValueAnimator mValueAnim;
-    private int mOneLeft, mTwoLeft;
+    private int mOneLeft, mTwoLeft, mOneTop, mTwoTop;
 
     public DMSurfaceView(Context context)
     {
@@ -68,6 +68,16 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder.addCallback(this);
         setZOrderOnTop(true);
         mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
+        initAttr(context.obtainStyledAttributes(attrs, R.styleable.DMSurfaceView, defStyleAttr, 0));
+    }
+
+    /**
+     * 初始化参数
+     */
+    private void initAttr(TypedArray a)
+    {
+        mDirection = Direction.getType(a.getInt(R.styleable.DMSurfaceView_direction, Direction.RIGHT_LEFT.value));
+        a.recycle();
     }
 
     @Override
@@ -95,14 +105,18 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         switch (mDirection)
         {
             case DOWN_UP:
+                mTwoTop = 0;
+                mOneTop = mHeight;
                 mValueAnim = ValueAnimator.ofInt(0, mHeight).setDuration(mDuration);
                 break;
             case UP_DOWN:
+                mTwoTop = 0;
+                mOneTop = -mHeight;
                 mValueAnim = ValueAnimator.ofInt(0, mHeight).setDuration(mDuration);
                 break;
             case LEFT_RIGHT:
-                mTwoLeft = -mWidth;
-                mOneLeft = 0;
+                mTwoLeft = 0;
+                mOneLeft = -mWidth;
                 mValueAnim = ValueAnimator.ofInt(0, mWidth).setDuration(mDuration);
                 break;
             case RIGHT_LEFT:
@@ -131,8 +145,65 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
             public void onAnimationRepeat(Animator animation)
             {
                 LogUtil.i("onAnimationRepeat");
-                mUseWidth = 0;
-                mUseHeight = 0;
+                animRepeat();
+            }
+        });
+
+        mValueAnim.start();
+
+        addFromQueue(mQueue);
+    }
+
+    /**
+     * 动画交替，数值变化
+     */
+    private void animRepeat()
+    {
+        mUseWidth = 0;
+        mUseHeight = 0;
+
+        switch (mDirection)
+        {
+            case DOWN_UP:
+                if (mTwoTop == 0)
+                {
+                    mTwoTop = mHeight;
+                    mOneTop = 0;
+                    exchangeTwoHandle();
+                } else
+                {
+                    mTwoTop = 0;
+                    mOneTop = mHeight;
+                    exchangeOneHandle();
+                }
+                break;
+            case UP_DOWN:
+                if (mTwoTop == 0)
+                {
+                    mTwoTop = -mHeight;
+                    mOneTop = 0;
+                    exchangeTwoHandle();
+                } else
+                {
+                    mTwoTop = 0;
+                    mOneTop = -mHeight;
+                    exchangeOneHandle();
+                }
+                break;
+            case LEFT_RIGHT:
+                if (mTwoLeft == 0)
+                {
+                    mTwoLeft = -mWidth;
+                    mOneLeft = 0;
+                    exchangeTwoHandle();
+                } else
+                {
+                    mTwoLeft = 0;
+                    mOneLeft = -mWidth;
+                    exchangeOneHandle();
+                }
+                break;
+            case RIGHT_LEFT:
                 if (mTwoLeft == 0)//动画重新开始时，判断如果mTwoBitmap是第一张图片，那么说明该次mTwoBitmap已展示完毕
                 {
                     mTwoLeft = mWidth;//那么mTwoBitmap将重新开始展示
@@ -145,13 +216,11 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                     mOneLeft = mWidth;
                     exchangeOneHandle();
                 }
-                mDrawDMCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);//清理后台绘制弹幕的画布
+                break;
+        }
 
-                addFromQueue(mQueue);
-            }
-        });
-
-        mValueAnim.start();
+        mDrawDMCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);//清理后台绘制弹幕的画布
+        addFromQueue(mQueue);
     }
 
     /**
@@ -199,10 +268,16 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
                         canvas.drawBitmap(mTwoBitmap, mTwoLeft - value, 0, null);
                         break;
                     case LEFT_RIGHT:
+                        canvas.drawBitmap(mOneBitmap, mOneLeft + value, 0, null);
+                        canvas.drawBitmap(mTwoBitmap, mTwoLeft + value, 0, null);
                         break;
                     case UP_DOWN:
+                        canvas.drawBitmap(mOneBitmap, 0, mOneTop + value, null);
+                        canvas.drawBitmap(mTwoBitmap, 0, mTwoTop + value, null);
                         break;
                     case DOWN_UP:
+                        canvas.drawBitmap(mOneBitmap, 0, mOneTop - value, null);
+                        canvas.drawBitmap(mTwoBitmap, 0, mTwoTop - value, null);
                         break;
                     default:
                 }
@@ -245,9 +320,99 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     {
         if (!isActive) return;
 //        LogUtil.i("num = " + num + ", mUseWidth = " + mUseWidth + ", mUseHeight = " + mUseHeight + " --- mWidth = " + mWidth + ", mHeight = " + mHeight);
+        switch (mDirection)
+        {
+            case RIGHT_LEFT:
+                drawRightLeft(entity);
+                break;
+            case LEFT_RIGHT:
+                drawLeftRight(entity);
+                break;
+            case UP_DOWN:
+                drawUpDown(entity);
+                break;
+            case DOWN_UP:
+                drawDownUp(entity);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    /**
+     * 弹幕从上往下跑
+     * 绘制弹幕：从画布下到上，左到右绘制
+     */
+    private void drawUpDown(BaseDmEntity entity)
+    {
         Bitmap bitmap = entity.getBitmap();
-        int left = 0;
-        int top = 0;
+        final int left;
+        final int top;
+        if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
+        {
+            top = mHeight - bitmap.getHeight() - random.nextInt(100);
+            left = 0;
+        } else if (mHeight - mUseHeight > bitmap.getHeight())//顶部空间足的情况
+        {
+            top = mHeight - mUseHeight - bitmap.getHeight();
+            left = mUseWidth - bitmap.getWidth();
+        } else if (mHeight - mUseHeight < bitmap.getHeight() && mWidth - mUseWidth > bitmap.getWidth())//顶部空间不足，右侧空间足到情况
+        {
+            top = mHeight - bitmap.getHeight() - random.nextInt(100);
+            left = mUseWidth;
+        } else
+        {
+            mQueue.offer(entity);
+            return;
+        }
+
+        mUseWidth = left + bitmap.getWidth();
+        mUseHeight = mHeight - top + random.nextInt(100);
+        mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+    }
+
+    /**
+     * 弹幕从下往上跑
+     * 绘制弹幕：从画布上到下，左到右绘制
+     */
+    private void drawDownUp(BaseDmEntity entity)
+    {
+        Bitmap bitmap = entity.getBitmap();
+        final int left;
+        final int top;
+        if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
+        {
+            top = random.nextInt(100);
+            left = 0;
+        } else if (mHeight - mUseHeight > bitmap.getHeight())//底部空间足的情况
+        {
+            left = mUseWidth - bitmap.getWidth();
+            top = mUseHeight;
+        } else if (mHeight - mUseHeight < bitmap.getHeight() && mWidth - mUseWidth > bitmap.getWidth())//底部空间不足，右侧空间足到情况
+        {
+            left = mUseWidth;
+            top = random.nextInt(100);
+        } else
+        {
+            mQueue.offer(entity);
+            return;
+        }
+
+        mUseWidth = left + bitmap.getWidth();
+        mUseHeight = top + bitmap.getHeight() + random.nextInt(100);
+        mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+    }
+
+    /**
+     * 弹幕从右往左跑
+     * 绘制弹幕：从画布左到右，上到下绘制
+     */
+    private void drawRightLeft(BaseDmEntity entity)
+    {
+        Bitmap bitmap = entity.getBitmap();
+        final int left;
+        final int top;
         if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
         {
             left = random.nextInt(100);
@@ -272,15 +437,51 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
     }
 
-    @Override
-    public void addFromQueue(PriorityQueue<BaseDmEntity> queue)
+    /**
+     * 弹幕从左往右跑
+     * 绘制弹幕：从画布右到左，上到下绘制
+     */
+    private void drawLeftRight(BaseDmEntity entity)
+    {
+        Bitmap bitmap = entity.getBitmap();
+        final int left;
+        final int top;
+        if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
+        {
+            left = mWidth - bitmap.getWidth() - random.nextInt(100);
+            top = 0;
+        } else if (mWidth - mUseWidth > bitmap.getWidth())//左侧空间足到情况
+        {
+            left = mWidth - mUseWidth - bitmap.getWidth();
+            top = mUseHeight - bitmap.getHeight();
+        } else if (mWidth - mUseWidth < bitmap.getWidth() && mHeight - mUseHeight > bitmap.getHeight())//左侧空间不足，底部空间足到情况
+        {
+            left = mWidth - bitmap.getWidth() - random.nextInt(100);
+            top = mUseHeight;
+        } else //此时画布空间不足了，将这个弹幕添加到容器当中
+        {
+            mQueue.offer(entity);
+            return;
+        }
+
+        mUseWidth = mWidth - left + random.nextInt(100);
+        mUseHeight = top + bitmap.getHeight();
+        mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+    }
+
+    /**
+     * 将队列中未画在画布上到弹幕展示出来
+     *
+     * @param queue 将保存在队列中到弹幕展示出来
+     */
+    private void addFromQueue(PriorityQueue<BaseDmEntity> queue)
     {
         if (!isActive) return;
         LogUtil.i("addFromQueue method");
         if (queue.peek() != null)
         {
             BaseDmEntity entity = queue.remove();
-            if (mHeight - mUseHeight > entity.getBitmap().getHeight())
+            if (mWidth - mUseWidth > entity.getBitmap().getWidth() || mHeight - mUseHeight > entity.getBitmap().getHeight())
             {
                 add(entity);
             } else

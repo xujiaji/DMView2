@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout"
+    android:layout_width="40dp"
+    android:padding="4dp"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp">
+
+
+    <TextView
+        android:id="@+id/tvBarrageName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="1"
+        android:layout_gravity="right|bottom"
+        android:layout_marginBottom="32dp"
+        android:includeFontPadding="false"
+        android:text="某某某"
+        android:textColor="#ff8813"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvBarrageMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="1"
+        android:background="@drawable/shape_barrage_bg"
+        android:layout_marginBottom="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:textColor="#ff0000"
+        android:gravity="center"
+        android:text="一条消息飘过"
+        android:layout_gravity="bottom"
+        android:textSize="13sp" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgBarrageHead"
+        android:layout_width="@dimen/head_size"
+        android:layout_height="@dimen/head_size"
+        android:src="@drawable/boy_head"
+        app:civ_border_width="1dp"
+        android:layout_gravity="bottom"
+        app:civ_border_color="#FF000000"/>
+</FrameLayout>
