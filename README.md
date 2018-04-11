@@ -6,7 +6,7 @@
 |从右往左|从左往右|从上往下|从下往上|
 |-|-|-|-|
 |![right_left](img/right_left.png)|![left_right](img/left_right.png)|![up_down](img/up_down.png)|![down_up](img/down_up.png)|
-|`app:direction="right_left"`|`app:direction="left_right"`|`app:direction="up_down"`|`app:direction="down_up"`|
+|`direction="right_left"`|`direction="left_right"`|`direction="up_down"`|`direction="down_up"`|
 
 # 如何使用？
 ## 步骤1
