@@ -1,5 +1,5 @@
 # DMView2
-[GitHub release](https://img.shields.io/badge/bintray-1.1.4-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.2)
+[![GitHub release](https://img.shields.io/badge/bintray-0.0.2-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.2)
 
 > 弹幕对照表
 
