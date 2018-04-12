@@ -1,4 +1,4 @@
-package com.xujiaji.dmlib2;
+package com.xujiaji.dmlib2.widget;
 /*
  * Copyright 2018 xujiaji
  *
@@ -14,42 +14,36 @@ package com.xujiaji.dmlib2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PixelFormat;
-import android.graphics.PointF;
 import android.graphics.PorterDuff;
-import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
+import com.xujiaji.dmlib2.Direction;
+import com.xujiaji.dmlib2.LogUtil;
+import com.xujiaji.dmlib2.Util;
+import com.xujiaji.dmlib2.callback.OnDMAddListener;
 import com.xujiaji.dmlib2.entity.BaseDmEntity;
 
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
 
 /**
- * 用SurfaceView实现弹幕
- * Created by jiaji on 2018/2/19.
+ * 动画路径绘制登帮助类
  */
-
-public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback, DM
+public class Controller
 {
     private Direction mDirection = Direction.RIGHT_LEFT;
     private int mDuration = 3000;
-    private SurfaceHolder mSurfaceHolder;
     private PriorityQueue<BaseDmEntity> mQueue = new PriorityQueue<>();
+    private SurfaceHolder mSurfaceHolder;
     private boolean isActive;//是否是活跃状态
     private Bitmap mOneBitmap;
     private Bitmap mTwoBitmap;
@@ -64,45 +58,26 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private int mWidth, mHeight;
     private ValueAnimator mValueAnim;
     private int mOneLeft, mTwoLeft, mOneTop, mTwoTop;
+    private final Random random = new Random();
 
-    public DMSurfaceView(Context context)
-    {
-        this(context, null);
-    }
-
-    public DMSurfaceView(Context context, AttributeSet attrs)
-    {
-        this(context, attrs, 0);
-    }
-
-    public DMSurfaceView(Context context, AttributeSet attrs, int defStyleAttr)
-    {
-        super(context, attrs, defStyleAttr);
-        mSurfaceHolder = getHolder();
-        mSurfaceHolder.addCallback(this);
-        setZOrderOnTop(true);
-        mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
-        initAttr(context.obtainStyledAttributes(attrs, R.styleable.DMSurfaceView, defStyleAttr, 0));
-    }
+    private OnDMAddListener mOnDMAddListener;
 
     /**
-     * 初始化参数
+     *
+     * @param width 画布登宽
+     * @param height 画布的高
+     * @param duration 展示一个弹幕多少秒
+     * @param direction 动画允许方向
+     * @param surfaceHolder SurfaceView Holder
      */
-    private void initAttr(TypedArray a)
+    void init(int width, int height, int duration, Direction direction, SurfaceHolder surfaceHolder)
     {
-        mDirection = Direction.getType(a.getInt(R.styleable.DMSurfaceView_direction, Direction.RIGHT_LEFT.value));
-        a.recycle();
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder)
-    {
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
-    {
+        mSurfaceHolder = surfaceHolder;
+        mDirection = direction;
         isActive = true;
+        mUseWidth = 0;
+        mUseHeight = 0;
+        mDuration = duration;
         mOneBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         mTwoBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         mDrawDMBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
@@ -167,6 +142,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
         addFromQueue(mQueue);
     }
+
 
     /**
      * 动画交替，数值变化
@@ -309,50 +285,6 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder)
-    {
-        isActive = false;
-        mValueAnim.cancel();
-        Util.restoreBitmap(mOneBitmap);
-        Util.restoreBitmap(mTwoBitmap);
-        Util.restoreBitmap(mDrawDMBitmap);
-    }
-
-    Random random = new Random();
-
-    @Override
-    public synchronized void add(View templateView)
-    {
-        if (!isActive) return;
-        BaseDmEntity entity = new BaseDmEntity(templateView);
-        add(entity);
-    }
-
-    @Override
-    public synchronized void add(BaseDmEntity entity)
-    {
-        if (!isActive) return;
-//        LogUtil.i("num = " + num + ", mUseWidth = " + mUseWidth + ", mUseHeight = " + mUseHeight + " --- mWidth = " + mWidth + ", mHeight = " + mHeight);
-        switch (mDirection)
-        {
-            case RIGHT_LEFT:
-                drawRightLeft(entity);
-                break;
-            case LEFT_RIGHT:
-                drawLeftRight(entity);
-                break;
-            case UP_DOWN:
-                drawUpDown(entity);
-                break;
-            case DOWN_UP:
-                drawDownUp(entity);
-                break;
-            default:
-                break;
-        }
-
-    }
 
     /**
      * 弹幕从上往下跑
@@ -384,6 +316,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mUseWidth = left + bitmap.getWidth();
         mUseHeight = mHeight - top + random.nextInt(100);
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+        dmAdded(entity);
     }
 
     /**
@@ -416,6 +349,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mUseWidth = left + bitmap.getWidth();
         mUseHeight = top + bitmap.getHeight() + random.nextInt(100);
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+        dmAdded(entity);
     }
 
     /**
@@ -449,6 +383,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mUseWidth = left + bitmap.getWidth() + random.nextInt(100);
         mUseHeight = top + bitmap.getHeight();
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+        dmAdded(entity);
     }
 
     /**
@@ -481,7 +416,10 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mUseWidth = mWidth - left + random.nextInt(100);
         mUseHeight = top + bitmap.getHeight();
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+        dmAdded(entity);
     }
+
+
 
     /**
      * 将队列中未画在画布上到弹幕展示出来
@@ -508,5 +446,56 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         {
             addFromQueue(queue);
         }
+    }
+
+    public synchronized void add(View templateView)
+    {
+        if (!isActive) return;
+        BaseDmEntity entity = new BaseDmEntity(templateView);
+        add(entity);
+    }
+
+    public synchronized void add(BaseDmEntity entity)
+    {
+        if (!isActive) return;
+//        LogUtil.i("num = " + num + ", mUseWidth = " + mUseWidth + ", mUseHeight = " + mUseHeight + " --- mWidth = " + mWidth + ", mHeight = " + mHeight);
+        switch (mDirection)
+        {
+            case RIGHT_LEFT:
+                drawRightLeft(entity);
+                break;
+            case LEFT_RIGHT:
+                drawLeftRight(entity);
+                break;
+            case UP_DOWN:
+                drawUpDown(entity);
+                break;
+            case DOWN_UP:
+                drawDownUp(entity);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void dmAdded(BaseDmEntity dmEntity)
+    {
+        if (mOnDMAddListener == null) return;
+        mOnDMAddListener.added(dmEntity);
+    }
+
+    public void setOnDMAddListener(OnDMAddListener l)
+    {
+        this.mOnDMAddListener = l;
+    }
+
+    void destroy()
+    {
+        isActive = false;
+        mValueAnim.cancel();
+        Util.restoreBitmap(mOneBitmap);
+        Util.restoreBitmap(mTwoBitmap);
+        Util.restoreBitmap(mDrawDMBitmap);
     }
 }

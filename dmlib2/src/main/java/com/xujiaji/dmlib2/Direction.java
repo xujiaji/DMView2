@@ -40,7 +40,7 @@ public enum Direction
     DOWN_UP(4);
 
 
-    int value;
+    public int value;
 
     Direction(int v)
     {

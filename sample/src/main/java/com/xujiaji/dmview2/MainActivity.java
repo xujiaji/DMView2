@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.xujiaji.dmlib2.DMSurfaceView;
+import com.xujiaji.dmlib2.widget.DMSurfaceView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition)
                     {
                         mViewHolder.imgBarrageHead.setImageDrawable(resource);
-                        dmSurfaceView.add(templateView);
+                        dmSurfaceView.getController().add(templateView);
                     }
                 });
     }

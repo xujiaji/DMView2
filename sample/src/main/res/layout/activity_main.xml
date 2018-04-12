@@ -8,10 +8,11 @@
     android:orientation="vertical"
     tools:context="com.xujiaji.dmview2.MainActivity">
 
-    <com.xujiaji.dmlib2.DMSurfaceView
+    <com.xujiaji.dmlib2.widget.DMSurfaceView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
         app:direction="down_up"
+        app:duration="2000"
         android:layout_height="200dp" />
 
     <Button

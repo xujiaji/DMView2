@@ -14,22 +14,13 @@ package com.xujiaji.dmlib2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import android.view.View;
-import com.xujiaji.dmlib2.entity.BaseDmEntity;
-import java.util.PriorityQueue;
+
+import com.xujiaji.dmlib2.widget.Controller;
 
 /**
  * 弹幕接口
  */
 public interface DM
 {
-
-    /**
-     * 添加一个弹幕
-     * @param templateView 模板View
-     */
-    void add(View templateView);
-
-    void add(BaseDmEntity entity);
-
+    Controller getController();
 }

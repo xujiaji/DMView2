@@ -6,7 +6,15 @@
 |从右往左|从左往右|从上往下|从下往上|
 |-|-|-|-|
 |![right_left](img/right_left.png)|![left_right](img/left_right.png)|![up_down](img/up_down.png)|![down_up](img/down_up.png)|
-|`direction="right_left"`|`direction="left_right"`|`direction="up_down"`|`direction="down_up"`|
+
+> 方法参照表
+
+|方法名\xml参数|值|作用|
+|:-|-|:-|
+|`app:direction="down_up"`|`right_left`、`left_right`<br>`up_down`、`down_up`|`down_up`：弹幕从下往上跑；<br>`up_down`：弹幕从上往下跑；<br>`left_right`：弹幕从左往右跑；<br>`right_left`：弹幕从右往左跑|
+|`app:duration="2000"`|int|设置一个弹幕从显示到消失到时间|
+|`mDMSurfaceView`<br>`.getController()`<br>`.add(templateView);`|View|`templateView`是一个弹幕的模板样式，并且这个模板已经设置好数据。|
+|`mDMSurfaceView`<br>`.getController()`<br>`.add(templateView);`|BaseDmEntity|`templateView`是一个弹幕的模板样式，并且这个模板已经设置好数据。自己创建一个弹幕实例|
 
 # 如何使用？
 
@@ -21,7 +29,6 @@ implementation 'com.github.xujiaji:dmlib2:0.0.1'
 > 在布局xml文件中添加，如下：
 
 ``` xml
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -31,10 +38,11 @@ implementation 'com.github.xujiaji:dmlib2:0.0.1'
     android:orientation="vertical"
     tools:context="com.xujiaji.dmview2.MainActivity">
 
-    <com.xujiaji.dmlib2.DMSurfaceView
+    <com.xujiaji.dmlib2.widget.DMSurfaceView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
         app:direction="down_up"
+        app:duration="2000"
         android:layout_height="200dp" />
 
     <Button
@@ -141,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition)
                     {
                         mViewHolder.imgBarrageHead.setImageDrawable(resource);
-                        dmSurfaceView.add(templateView);
+                        dmSurfaceView.getController().add(templateView);
                     }
                 });
     }
@@ -160,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 }
+
 ```
 
 

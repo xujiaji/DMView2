@@ -7,5 +7,7 @@
             <enum name="up_down"    value="3"/>
             <enum name="down_up"    value="4"/>
         </attr>
+
+        <attr name="duration" format="integer"/>
     </declare-styleable>
 </resources>
