@@ -8,11 +8,17 @@
     android:orientation="vertical"
     tools:context="com.xujiaji.dmview2.MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="测试DMSurfaceView"/>
+
     <com.xujiaji.dmlib2.widget.DMSurfaceView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
         app:direction="down_up"
-        app:duration="2000"
+        app:duration="3200"
         android:layout_height="200dp" />
 
     <Button
@@ -20,4 +26,11 @@
         android:layout_height="wrap_content"
         android:onClick="onClickAddDM"
         android:text="添加十个弹幕"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:onClick="onClickGoTestDMTextureView"
+        android:text="去测试DMTextureView"/>
 </LinearLayout>

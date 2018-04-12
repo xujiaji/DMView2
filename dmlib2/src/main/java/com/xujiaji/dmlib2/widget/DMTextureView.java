@@ -17,47 +17,40 @@ package com.xujiaji.dmlib2.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.PixelFormat;
+import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.Surface;
+import android.view.TextureView;
 
 import com.xujiaji.dmlib2.DM;
 import com.xujiaji.dmlib2.Direction;
 import com.xujiaji.dmlib2.R;
 import com.xujiaji.dmlib2.SurfaceProxy;
 
-/**
- * 用SurfaceView实现弹幕
- * Created by jiaji on 2018/2/19.
- */
-
-public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback, DM
+public class DMTextureView extends TextureView implements TextureView.SurfaceTextureListener, DM
 {
-    private SurfaceHolder mSurfaceHolder;
+    private Surface mSurface;
     private Controller mController;
     private Direction mDirection;
     private int mDuration = 3000;
 
-    public DMSurfaceView(Context context)
+    public DMTextureView(Context context)
     {
         this(context, null);
     }
 
-    public DMSurfaceView(Context context, AttributeSet attrs)
+    public DMTextureView(Context context, AttributeSet attrs)
     {
         this(context, attrs, 0);
     }
 
-    public DMSurfaceView(Context context, AttributeSet attrs, int defStyleAttr)
+    public DMTextureView(Context context, AttributeSet attrs, int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
+        this.setSurfaceTextureListener(this);
         mController = new Controller();
-        mSurfaceHolder = getHolder();
-        mSurfaceHolder.addCallback(this);
-        setZOrderOnTop(true);
-        mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
-        initAttr(context.obtainStyledAttributes(attrs, R.styleable.DMSurfaceView, defStyleAttr, 0));
+        setOpaque(false);
+        initAttr(context.obtainStyledAttributes(attrs, R.styleable.DMTextureView, defStyleAttr, 0));
     }
 
     /**
@@ -65,29 +58,37 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
      */
     private void initAttr(TypedArray a)
     {
-        mDirection = Direction.getType(a.getInt(R.styleable.DMSurfaceView_direction, Direction.RIGHT_LEFT.value));
-        mDuration = a.getInt(R.styleable.DMSurfaceView_duration, 3000);
+        mDirection = Direction.getType(a.getInt(R.styleable.DMTextureView_direction, Direction.RIGHT_LEFT.value));
+        mDuration = a.getInt(R.styleable.DMTextureView_duration, 3000);
         a.recycle();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder)
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height)
     {
+        mSurface = new Surface(surface);
+        mController.init(width, height, mDuration, mDirection, new SurfaceProxy(mSurface));
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height)
     {
-        mController.init(width, height, mDuration, mDirection, new SurfaceProxy(mSurfaceHolder));
+
     }
 
-
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder)
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface)
     {
+        mSurface = null;
         mController.destroy();
+        return true;
     }
 
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface)
+    {
+
+    }
 
     @Override
     public Controller getController()

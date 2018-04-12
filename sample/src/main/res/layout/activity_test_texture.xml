@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onClickAddDM"
+            android:text="每个添加五个弹幕"/>
+
+        <com.xujiaji.dmlib2.widget.DMTextureView
+            android:id="@+id/dmDownUp"
+            android:layout_width="match_parent"
+            app:direction="down_up"
+            android:layout_height="200dp" />
+
+        <com.xujiaji.dmlib2.widget.DMTextureView
+            android:id="@+id/dmLeftRight"
+            android:layout_width="match_parent"
+            app:direction="left_right"
+            android:layout_height="200dp" />
+
+        <com.xujiaji.dmlib2.widget.DMTextureView
+            android:id="@+id/dmRightLeft"
+            android:layout_width="match_parent"
+            app:direction="right_left"
+            android:layout_height="200dp" />
+
+        <com.xujiaji.dmlib2.widget.DMTextureView
+            android:id="@+id/dmUpDown"
+            android:layout_width="match_parent"
+            app:direction="up_down"
+            android:layout_height="200dp" />
+
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

@@ -28,12 +28,16 @@ import android.view.animation.LinearInterpolator;
 
 import com.xujiaji.dmlib2.Direction;
 import com.xujiaji.dmlib2.LogUtil;
+import com.xujiaji.dmlib2.SurfaceProxy;
 import com.xujiaji.dmlib2.Util;
 import com.xujiaji.dmlib2.callback.OnDMAddListener;
 import com.xujiaji.dmlib2.entity.BaseDmEntity;
 
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 动画路径绘制登帮助类
@@ -42,8 +46,9 @@ public class Controller
 {
     private Direction mDirection = Direction.RIGHT_LEFT;
     private int mDuration = 3000;
+    private boolean isRun = false;
     private PriorityQueue<BaseDmEntity> mQueue = new PriorityQueue<>();
-    private SurfaceHolder mSurfaceHolder;
+    private SurfaceProxy mSurfaceProxy;
     private boolean isActive;//是否是活跃状态
     private Bitmap mOneBitmap;
     private Bitmap mTwoBitmap;
@@ -68,11 +73,11 @@ public class Controller
      * @param height 画布的高
      * @param duration 展示一个弹幕多少秒
      * @param direction 动画允许方向
-     * @param surfaceHolder SurfaceView Holder
+     * @param surfaceProxy 代理surface
      */
-    void init(int width, int height, int duration, Direction direction, SurfaceHolder surfaceHolder)
+    void init(int width, int height, int duration, Direction direction, SurfaceProxy surfaceProxy)
     {
-        mSurfaceHolder = surfaceHolder;
+        mSurfaceProxy = surfaceProxy;
         mDirection = direction;
         isActive = true;
         mUseWidth = 0;
@@ -123,7 +128,7 @@ public class Controller
             @Override
             public void onAnimationUpdate(ValueAnimator animation)
             {
-                int value = (int) animation.getAnimatedValue();
+                final int value = (int) animation.getAnimatedValue();
                 startRun(value);
             }
         });
@@ -244,7 +249,7 @@ public class Controller
         Canvas canvas = null;
         try
         {
-            canvas = mSurfaceHolder.lockCanvas();
+            canvas = mSurfaceProxy.lockCanvas();
             if (canvas == null)
             {
                 mValueAnim.cancel();
@@ -279,7 +284,7 @@ public class Controller
         {
             if (canvas != null)
             {
-                mSurfaceHolder.unlockCanvasAndPost(canvas);
+                mSurfaceProxy.unlockCanvasAndPost(canvas);
             }
         }
 

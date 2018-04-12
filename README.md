@@ -1,5 +1,19 @@
 # DMView2
-[![GitHub release](https://img.shields.io/badge/bintray-0.0.2-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.2)
+[![GitHub release](https://img.shields.io/badge/bintray-0.0.3-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.3)
+
+**目前还不是稳定版，请使用的朋友自行斟酌！(〃'▽'〃)**
+
+> 介绍
+
+1. 改版为了将以前的DMView中的各种问题解决，采用了新的方式实现弹幕效果。
+2. 该弹幕不是单纯的只有文字的弹幕
+3. 该弹幕库通过两种方式实现，SurfaceView和TextureView。大家在使用的时候可以自行选择。
+4. 该弹幕只是展示你设置好的View模板，就是具体弹幕样式需要自己设计。
+
+
+> 测试效果演示
+
+![测试Gif展示](img/test.gif)
 
 > 弹幕对照表
 
@@ -13,16 +27,16 @@
 |:-|-|:-|
 |`app:direction="down_up"`|`right_left`、`left_right`<br>`up_down`、`down_up`|`down_up`：弹幕从下往上跑；<br>`up_down`：弹幕从上往下跑；<br>`left_right`：弹幕从左往右跑；<br>`right_left`：弹幕从右往左跑|
 |`app:duration="2000"`|int|设置一个弹幕从显示到消失到时间|
-|`mDMSurfaceView`<br>`.getController()`<br>`.add(templateView);`|View|`templateView`是一个弹幕的模板样式，并且这个模板已经设置好数据。|
-|`mDMSurfaceView`<br>`.getController()`<br>`.add(templateView);`|BaseDmEntity|`templateView`是一个弹幕的模板样式，并且这个模板已经设置好数据。自己创建一个弹幕实例|
+|`mDMSurfaceView`<br>`.getController()`<br>`.add(templateView);`<br>或<br>`mDMTextureView`<br>`.getController()`<br>`.add(templateView);`|View|`templateView`是一个弹幕的模板样式，并且这个模板已经设置好数据。|
+|`mDMSurfaceView`<br>`.getController()`<br>`.add(templateView);`<br>或<br>`mDMTextureView`<br>`.getController()`<br>`.add(templateView);`|BaseDmEntity|`templateView`是一个弹幕的模板样式，并且这个模板已经设置好数据。自己创建一个弹幕实例|
 
 # 如何使用？
 
-## 步骤1
+## 步骤0
 > build.gradle文件中添加依赖
 
 ```
-implementation 'com.github.xujiaji:dmlib2:0.0.2'
+implementation 'com.github.xujiaji:dmlib2:0.0.3'
 ```
 
 ## 步骤1
@@ -106,7 +120,7 @@ implementation 'com.github.xujiaji:dmlib2:0.0.2'
 ```
 
 ## 步骤3
-> 获取DMSurfaceView实例，通过add方法添加弹幕，弹幕为步骤2设置好数据的模板。详细代码如下；
+> 获取DMSurfaceView实例，通过add方法添加弹幕，弹幕为步骤2设置好数据的模板。详细代码如下；(该代码只展示了DMSurfaceView，查看DMTexutureView使用请参考 [TestTextureActivity.java](sample/src/main/java/com/xujiaji/dmview2/TestTextureActivity.java))
 
 ``` java
 public class MainActivity extends AppCompatActivity {
@@ -152,6 +166,11 @@ public class MainActivity extends AppCompatActivity {
                         dmSurfaceView.getController().add(templateView);
                     }
                 });
+    }
+
+    public void onClickGoTestDMTextureView(View view)
+    {
+        startActivity(new Intent(this, TestTextureActivity.class));
     }
 
     private static class ViewHolder
