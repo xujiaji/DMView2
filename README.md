@@ -22,7 +22,7 @@
 > build.gradle文件中添加依赖
 
 ```
-implementation 'com.github.xujiaji:dmlib2:0.0.1'
+implementation 'com.github.xujiaji:dmlib2:0.0.2'
 ```
 
 ## 步骤1
