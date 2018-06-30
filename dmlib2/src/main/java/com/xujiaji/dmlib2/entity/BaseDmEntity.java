@@ -27,11 +27,17 @@ import com.xujiaji.dmlib2.Util;
 public class BaseDmEntity implements Comparable<BaseDmEntity>
 {
     private Bitmap bitmap;
+    private boolean isSplice;//是否需要拼接
+    private float left;
+    private float top;
+    private float right;
+    private float bottom;
     private int priority;
 
     public BaseDmEntity(View itemView)
     {
         bitmap = Util.convertViewToBitmap(itemView);
+        isSplice = false;
     }
 
     public Bitmap getBitmap()
@@ -39,6 +45,70 @@ public class BaseDmEntity implements Comparable<BaseDmEntity>
         return bitmap;
     }
 
+    public void setBitmap(Bitmap bitmap)
+    {
+        this.bitmap = bitmap;
+    }
+
+    public boolean isSplice()
+    {
+        return isSplice;
+    }
+
+    public void setSplice(boolean splice)
+    {
+        isSplice = splice;
+    }
+
+    public float getLeft()
+    {
+        return left;
+    }
+
+    public void setLeft(float left)
+    {
+        this.left = left;
+    }
+
+    public float getTop()
+    {
+        return top;
+    }
+
+    public void setTop(float top)
+    {
+        this.top = top;
+    }
+
+    public float getRight()
+    {
+        return right;
+    }
+
+    public void setRight(float right)
+    {
+        this.right = right;
+    }
+
+    public float getBottom()
+    {
+        return bottom;
+    }
+
+    public void setBottom(float bottom)
+    {
+        this.bottom = bottom;
+    }
+
+    public int getPriority()
+    {
+        return priority;
+    }
+
+    public void setPriority(int priority)
+    {
+        this.priority = priority;
+    }
 
     @Override
     public int compareTo(BaseDmEntity o)
