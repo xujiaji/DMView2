@@ -1,5 +1,8 @@
 # DMView2
-[![GitHub release](https://img.shields.io/badge/bintray-0.0.3-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.3)
+[![GitHub release](https://img.shields.io/badge/bintray-0.0.4-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.4)
+
+> 更新
+- 0.0.4: [修复弹幕过长后的不完整](https://github.com/xujiaji/DMView2/issues/1)
 
 **目前还不是稳定版，请使用的朋友自行斟酌！(〃'▽'〃)**
 
@@ -36,7 +39,7 @@
 > build.gradle文件中添加依赖
 
 ```
-implementation 'com.github.xujiaji:dmlib2:0.0.3'
+implementation 'com.github.xujiaji:dmlib2:0.0.4'
 ```
 
 ## 步骤1

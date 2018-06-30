@@ -33,8 +33,15 @@ import com.xujiaji.dmlib2.Util;
 import com.xujiaji.dmlib2.callback.OnDMAddListener;
 import com.xujiaji.dmlib2.entity.BaseDmEntity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Random;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +55,7 @@ public class Controller
     private int mDuration = 3000;
     private boolean isRun = false;
     private PriorityQueue<BaseDmEntity> mQueue = new PriorityQueue<>();
+    private Set<BaseDmEntity> mSpliceList = new LinkedHashSet<>();
     private SurfaceProxy mSurfaceProxy;
     private boolean isActive;//是否是活跃状态
     private Bitmap mOneBitmap;
@@ -57,8 +65,8 @@ public class Controller
     private Canvas mOneCanvas;
     private Canvas mTwoCanvas;
     private Canvas mDrawDMCanvas;
-    private int mUseWidth;//绘制了的弹幕占用的宽
-    private int mUseHeight;//绘制了的弹幕占用的高
+    private float mUseWidth;//绘制了的弹幕占用的宽
+    private float mUseHeight;//绘制了的弹幕占用的高
 
     private int mWidth, mHeight;
     private ValueAnimator mValueAnim;
@@ -215,8 +223,33 @@ public class Controller
         }
 
         mDrawDMCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);//清理后台绘制弹幕的画布
+//        n ++;
+//        if (n % 2 == 0)
+//        {
+//            mDrawDMCanvas.drawColor(Color.BLUE);
+//        } else
+//        {
+//            mDrawDMCanvas.drawColor(Color.GREEN);
+//        }
+
+        Set<BaseDmEntity> set = new LinkedHashSet<>(mSpliceList);
+        for (Iterator<BaseDmEntity> it = set.iterator(); it.hasNext();)
+        {
+            BaseDmEntity dm = it.next();
+            add(dm);
+            if (dm.isSplice()) // 去掉有效弹幕
+            {
+                it.remove();
+            }
+        }
+
+        //清楚无效弹幕
+        mSpliceList.removeAll(set);
+
         addFromQueue(mQueue);
     }
+
+//    int n = 1;
 
     /**
      * 交换mOneBitmap和mDrawDMBitmap的引用
@@ -298,9 +331,14 @@ public class Controller
     private void drawUpDown(BaseDmEntity entity)
     {
         Bitmap bitmap = entity.getBitmap();
-        final int left;
-        final int top;
-        if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
+        final float left;
+        final float top;
+        if (entity.isSplice())
+        {
+            final float diff = mHeight - bitmap.getHeight();
+            top = diff < 0 ? 0 : diff;
+            left = entity.getLeft();
+        } else if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
         {
             top = mHeight - bitmap.getHeight() - random.nextInt(100);
             left = 0;
@@ -319,9 +357,26 @@ public class Controller
         }
 
         mUseWidth = left + bitmap.getWidth();
-        mUseHeight = mHeight - top + random.nextInt(100);
+        mUseHeight = mHeight - top;
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+
+        if (top < 0)
+        {
+            final int newBitmapHeight = (int) (Math.abs(top));
+            entity.setSplice(true);
+            Bitmap newBitmap = Bitmap.createBitmap(bitmap.getWidth(), newBitmapHeight, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(newBitmap);
+            canvas.drawBitmap(bitmap, 0, 0, null);
+            entity.setBitmap(newBitmap);
+            entity.setLeft(left);
+            mSpliceList.add(entity);
+        } else
+        {
+            entity.setSplice(false);
+        }
+
         dmAdded(entity);
+        bitmap.recycle();
     }
 
     /**
@@ -331,9 +386,14 @@ public class Controller
     private void drawDownUp(BaseDmEntity entity)
     {
         Bitmap bitmap = entity.getBitmap();
-        final int left;
-        final int top;
-        if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
+        final float left;
+        final float top;
+        if (entity.isSplice())
+        {
+            top = 0;
+            left = entity.getLeft();
+        }
+        else if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
         {
             top = random.nextInt(100);
             left = 0;
@@ -352,9 +412,26 @@ public class Controller
         }
 
         mUseWidth = left + bitmap.getWidth();
-        mUseHeight = top + bitmap.getHeight() + random.nextInt(100);
+        mUseHeight = top + bitmap.getHeight();
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+
+        if (mUseHeight > mHeight)
+        {
+            final int newBitmapHeight = (int) (bitmap.getHeight() - mHeight + top);
+            entity.setSplice(true);
+            Bitmap newBitmap = Bitmap.createBitmap(bitmap.getWidth(), newBitmapHeight, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(newBitmap);
+            canvas.drawBitmap(bitmap, 0, -mHeight + top, null);
+            entity.setBitmap(newBitmap);
+            entity.setLeft(left);
+            mSpliceList.add(entity);
+        } else
+        {
+            entity.setSplice(false);
+        }
+
         dmAdded(entity);
+        bitmap.recycle();
     }
 
     /**
@@ -364,9 +441,14 @@ public class Controller
     private void drawRightLeft(BaseDmEntity entity)
     {
         Bitmap bitmap = entity.getBitmap();
-        final int left;
-        final int top;
-        if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
+        final float left;
+        final float top;
+        if (entity.isSplice())
+        {
+            top = entity.getTop();
+            left = 0;
+        }
+        else if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
         {
             left = random.nextInt(100);
             top = 0;
@@ -385,10 +467,28 @@ public class Controller
             return;
         }
 
-        mUseWidth = left + bitmap.getWidth() + random.nextInt(100);
+        mUseWidth = left + bitmap.getWidth();
         mUseHeight = top + bitmap.getHeight();
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+
+
+        if (mUseWidth > mWidth)
+        {
+            final int newBitmapWidth = (int) (bitmap.getWidth() - mWidth + left);
+            entity.setSplice(true);
+            Bitmap newBitmap = Bitmap.createBitmap(newBitmapWidth, bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(newBitmap);
+            canvas.drawBitmap(bitmap, -mWidth + left, 0, null);
+            entity.setBitmap(newBitmap);
+            entity.setTop(top);
+            mSpliceList.add(entity);
+        } else
+        {
+            entity.setSplice(false);
+        }
+
         dmAdded(entity);
+        bitmap.recycle();
     }
 
     /**
@@ -398,9 +498,14 @@ public class Controller
     private void drawLeftRight(BaseDmEntity entity)
     {
         Bitmap bitmap = entity.getBitmap();
-        final int left;
-        final int top;
-        if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
+        final float left;
+        final float top;
+        if (entity.isSplice())
+        {
+            final float diff = mWidth - bitmap.getWidth();
+            left = diff < 0 ? 0 : diff;
+            top = entity.getTop();
+        } else if (mUseWidth == 0 && mUseHeight == 0)//第一次添加的情况
         {
             left = mWidth - bitmap.getWidth() - random.nextInt(100);
             top = 0;
@@ -418,10 +523,27 @@ public class Controller
             return;
         }
 
-        mUseWidth = mWidth - left + random.nextInt(100);
+        mUseWidth = mWidth - left;
         mUseHeight = top + bitmap.getHeight();
         mDrawDMCanvas.drawBitmap(bitmap, left, top, null);
+
+        if (left < 0)
+        {
+            final int newBitmapWidth = (int) (Math.abs(left));
+            entity.setSplice(true);
+            Bitmap newBitmap = Bitmap.createBitmap(newBitmapWidth, bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(newBitmap);
+            canvas.drawBitmap(bitmap, 0, 0, null);
+            entity.setBitmap(newBitmap);
+            entity.setTop(top);
+            mSpliceList.add(entity);
+        } else
+        {
+            entity.setSplice(false);
+        }
+
         dmAdded(entity);
+        bitmap.recycle();
     }
 
 
