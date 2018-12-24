@@ -285,7 +285,7 @@ public class Controller
             canvas = mSurfaceProxy.lockCanvas();
             if (canvas == null)
             {
-                mValueAnim.cancel();
+//                mValueAnim.cancel();
             } else
             {
                 canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
@@ -615,6 +615,21 @@ public class Controller
     public void setOnDMAddListener(OnDMAddListener l)
     {
         this.mOnDMAddListener = l;
+    }
+
+    private long mCurrentPlayTime;
+
+    void prepare() {
+        if (mValueAnim == null || mValueAnim.isStarted()) {
+            return;
+        }
+        mValueAnim.setCurrentPlayTime(mCurrentPlayTime);
+        mValueAnim.start();
+    }
+
+    void pause() {
+        mCurrentPlayTime = mValueAnim.getCurrentPlayTime();
+        mValueAnim.cancel();
     }
 
     void destroy()

@@ -38,6 +38,8 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private Controller mController;
     private Direction mDirection;
     private int mDuration = 3000;
+    private int mWidth;
+    private int mHeight;
 
     public DMSurfaceView(Context context)
     {
@@ -73,11 +75,15 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceCreated(SurfaceHolder holder)
     {
+        mController.prepare();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
     {
+        if (mWidth == width && mHeight == height) return;
+        this.mWidth = width;
+        this.mHeight = height;
         mController.init(width, height, mDuration, mDirection, new SurfaceProxy(mSurfaceHolder));
     }
 
@@ -85,9 +91,14 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void surfaceDestroyed(SurfaceHolder holder)
     {
-        mController.destroy();
+        mController.pause();
     }
 
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mController.destroy();
+    }
 
     @Override
     public Controller getController()
