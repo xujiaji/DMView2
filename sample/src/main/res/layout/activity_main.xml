@@ -17,7 +17,7 @@
     <com.xujiaji.dmlib2.widget.DMSurfaceView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
-        app:direction="down_up"
+        app:direction="right_left"
         app:duration="3200"
         android:layout_height="200dp" />
 

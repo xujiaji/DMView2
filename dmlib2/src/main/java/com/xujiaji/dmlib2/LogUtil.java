@@ -19,7 +19,7 @@ import android.util.Log;
 public class LogUtil
 {
     private static final String TAG = "DMLog";
-    private static final boolean CLOSE = false;
+    private static final boolean CLOSE = !BuildConfig.DEBUG;
 
     public static void e(String msg)
     {

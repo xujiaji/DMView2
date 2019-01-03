@@ -14,9 +14,12 @@ package com.xujiaji.dmlib2.entity;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.view.View;
 
+import com.xujiaji.dmlib2.Direction;
 import com.xujiaji.dmlib2.Util;
 
 /**
@@ -24,103 +27,46 @@ import com.xujiaji.dmlib2.Util;
  * Created by jiaji on 2018/2/26.
  */
 
-public class BaseDmEntity implements Comparable<BaseDmEntity>
-{
-    private Bitmap bitmap;
-    private boolean isSplice;//是否需要拼接
-    private float left;
-    private float top;
-    private float right;
-    private float bottom;
-    private int priority;
+public class BaseDmEntity implements Comparable<BaseDmEntity> {
+    public final Bitmap bitmap;
+    public final Rect rect = new Rect();
+    public final int priority;
 
-    public BaseDmEntity(View itemView)
-    {
+    public BaseDmEntity(View itemView) {
+        this(itemView, 0);
+    }
+
+    public BaseDmEntity(View itemView, int priority) {
         bitmap = Util.convertViewToBitmap(itemView);
-        isSplice = false;
-    }
-
-    public Bitmap getBitmap()
-    {
-        return bitmap;
-    }
-
-    public void setBitmap(Bitmap bitmap)
-    {
-        this.bitmap = bitmap;
-    }
-
-    public boolean isSplice()
-    {
-        return isSplice;
-    }
-
-    public void setSplice(boolean splice)
-    {
-        isSplice = splice;
-    }
-
-    public float getLeft()
-    {
-        return left;
-    }
-
-    public void setLeft(float left)
-    {
-        this.left = left;
-    }
-
-    public float getTop()
-    {
-        return top;
-    }
-
-    public void setTop(float top)
-    {
-        this.top = top;
-    }
-
-    public float getRight()
-    {
-        return right;
-    }
-
-    public void setRight(float right)
-    {
-        this.right = right;
-    }
-
-    public float getBottom()
-    {
-        return bottom;
-    }
-
-    public void setBottom(float bottom)
-    {
-        this.bottom = bottom;
-    }
-
-    public int getPriority()
-    {
-        return priority;
-    }
-
-    public void setPriority(int priority)
-    {
         this.priority = priority;
+        this.rect.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
+    }
+
+    /**
+     * 是否需要绘制
+     * @param direction 弹幕运动方向
+     * @param displayDis 展示区域长度（相对于运动方向的长度）
+     * @return 是否需要绘制该弹幕（如果没有展示出来，则不需要绘制）
+     */
+    public boolean isNeedDraw(Direction direction, int displayDis) {
+        switch (direction) {
+            case RIGHT_LEFT:
+            case LEFT_RIGHT:
+                return rect.left < displayDis;
+            case DOWN_UP:
+            case UP_DOWN:
+                return rect.top < displayDis;
+        }
+        throw new RuntimeException("not direction " + direction.name() + " in 'isNeedDraw()'");
     }
 
     @Override
-    public int compareTo(BaseDmEntity o)
-    {
-        if (this.priority > o.priority)
-        {
+    public int compareTo(BaseDmEntity o) {
+        if (this.priority > o.priority) {
             return 1;
-        } else if (this.priority < o.priority)
-        {
+        } else if (this.priority < o.priority) {
             return -1;
-        } else
-        {
+        } else {
             return 0;
         }
     }
