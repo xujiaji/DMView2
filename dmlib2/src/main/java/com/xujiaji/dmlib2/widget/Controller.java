@@ -31,13 +31,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 动画路径绘制登帮助类
  */
 public class Controller implements Runnable {
     private Direction mDirection = Direction.RIGHT_LEFT;
-    private int mDuration = 3000;
     // 新弹幕
     private PriorityQueue<BaseDmEntity> mNewDMQueue = new PriorityQueue<>();
     // 已添加到屏幕的弹幕
@@ -49,19 +49,19 @@ public class Controller implements Runnable {
     private int vSpace = 20;// 垂直间距
     private boolean isRunning;
     private boolean isPause;// 是否是暂停状态
+    private int span = 2;// 刷新一次的跨度
+    private long sleep = 4; // 刷新一次睡多久, ms
     private OnDMAddListener mOnDMAddListener;
 
     /**
      * @param width        画布登宽
      * @param height       画布的高
-     * @param duration     展示一个弹幕多少秒
      * @param direction    动画允许方向
      * @param surfaceProxy 代理surface
      */
-    void init(int width, int height, int duration, Direction direction, SurfaceProxy surfaceProxy) {
+    void init(int width, int height, Direction direction, SurfaceProxy surfaceProxy) {
         mSurfaceProxy = surfaceProxy;
         mDirection = direction;
-        mDuration = duration;
         this.mWidth = width;
         this.mHeight = height;
         offset = mWidth;
@@ -71,11 +71,16 @@ public class Controller implements Runnable {
     public void run() {
         while (isRunning) {
             runTask();
+            try {
+                TimeUnit.MILLISECONDS.sleep(sleep);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private void runTask() {
-        offset -= 5;
+        offset -= span;
         draw(offset);
         if (addDMInQueue()) {
 
@@ -188,29 +193,30 @@ public class Controller implements Runnable {
         LogUtil.e("当前是添加的第几个弹幕：" + dmNum);
     }
 
-    void start() {
+    public void start() {
+        if (isRunning) return;
         offset = mWidth;
         isRunning = true;
         new Thread(this).start();
     }
 
-    void prepare() {
+    public void prepare() {
         if (isPause) {
             isRunning = true;
             new Thread(this).start();
         }
     }
 
-    void pause() {
+    public void pause() {
         isPause = true;
         isRunning = false;
     }
 
-    void destroy() {
-        offset = mWidth;
+    public void destroy() {
         isPause = false;
         isRunning = false;
-        mAddedMDList.clear();
         mNewDMQueue.clear();
+        mAddedMDList.clear();
+        offset = mWidth;
     }
 }

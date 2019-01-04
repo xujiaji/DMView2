@@ -12,11 +12,9 @@
 
     <declare-styleable name="DMSurfaceView">
         <attr name="direction" />
-        <attr name="duration" />
     </declare-styleable>
 
     <declare-styleable name="DMTextureView">
         <attr name="direction" />
-        <attr name="duration" />
     </declare-styleable>
 </resources>

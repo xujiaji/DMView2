@@ -32,8 +32,7 @@ import com.xujiaji.dmlib2.SurfaceProxy;
  * Created by jiaji on 2018/2/19.
  */
 
-public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback, DM
-{
+public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback, DM {
     private SurfaceHolder mSurfaceHolder;
     private Controller mController;
     private Direction mDirection;
@@ -41,57 +40,54 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private int mWidth;
     private int mHeight;
 
-    public DMSurfaceView(Context context)
-    {
+    public DMSurfaceView(Context context) {
         this(context, null);
     }
 
-    public DMSurfaceView(Context context, AttributeSet attrs)
-    {
+    public DMSurfaceView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public DMSurfaceView(Context context, AttributeSet attrs, int defStyleAttr)
-    {
+    public DMSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mController = new Controller();
+        initHolder();
+        initAttr(context.obtainStyledAttributes(attrs, R.styleable.DMSurfaceView, defStyleAttr, 0));
+    }
+
+    private void initHolder() {
         mSurfaceHolder = getHolder();
         mSurfaceHolder.addCallback(this);
         setZOrderOnTop(true);
         mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
-        initAttr(context.obtainStyledAttributes(attrs, R.styleable.DMSurfaceView, defStyleAttr, 0));
     }
 
     /**
      * 初始化参数
      */
-    private void initAttr(TypedArray a)
-    {
+    private void initAttr(TypedArray a) {
         mDirection = Direction.getType(a.getInt(R.styleable.DMSurfaceView_direction, Direction.RIGHT_LEFT.value));
-        mDuration = a.getInt(R.styleable.DMSurfaceView_duration, 3000);
         a.recycle();
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder)
-    {
+    public void surfaceCreated(SurfaceHolder holder) {
         mController.prepare();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
-    {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         if (mWidth == width && mHeight == height) return;
         this.mWidth = width;
         this.mHeight = height;
-        mController.init(width, height, mDuration, mDirection, new SurfaceProxy(mSurfaceHolder));
+        mController.init(width, height, mDirection, new SurfaceProxy(mSurfaceHolder));
     }
 
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder)
-    {
+    public void surfaceDestroyed(SurfaceHolder holder) {
         mController.pause();
+        holder.getSurface().release();
     }
 
     @Override
@@ -101,8 +97,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     }
 
     @Override
-    public Controller getController()
-    {
+    public Controller getController() {
         return mController;
     }
 }

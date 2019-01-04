@@ -32,7 +32,6 @@ public class DMTextureView extends TextureView implements TextureView.SurfaceTex
     private Surface mSurface;
     private Controller mController;
     private Direction mDirection;
-    private int mDuration = 3000;
 
     public DMTextureView(Context context)
     {
@@ -59,7 +58,6 @@ public class DMTextureView extends TextureView implements TextureView.SurfaceTex
     private void initAttr(TypedArray a)
     {
         mDirection = Direction.getType(a.getInt(R.styleable.DMTextureView_direction, Direction.RIGHT_LEFT.value));
-        mDuration = a.getInt(R.styleable.DMTextureView_duration, 3000);
         a.recycle();
     }
 
@@ -67,7 +65,7 @@ public class DMTextureView extends TextureView implements TextureView.SurfaceTex
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height)
     {
         mSurface = new Surface(surface);
-        mController.init(width, height, mDuration, mDirection, new SurfaceProxy(mSurface));
+        mController.init(width, height, mDirection, new SurfaceProxy(mSurface));
     }
 
     @Override

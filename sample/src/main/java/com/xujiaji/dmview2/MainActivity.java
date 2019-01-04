@@ -63,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, TestTextureActivity.class));
     }
 
+    public void onClickClearScreen(View view) {
+        dmSurfaceView.getController().destroy();
+    }
+
     private static class ViewHolder {
         TextView tvBarrageName;
         TextView tvBarrageMsg;

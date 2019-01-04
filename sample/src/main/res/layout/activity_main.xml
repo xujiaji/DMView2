@@ -28,6 +28,12 @@
         android:text="添加十个弹幕"/>
 
     <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickClearScreen"
+        android:text="清屏"/>
+
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
