@@ -17,9 +17,12 @@
     <com.xujiaji.dmlib2.widget.DMSurfaceView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
-        app:direction="right_left"
-        app:duration="3200"
-        android:layout_height="200dp" />
+        android:layout_height="200dp"
+        app:dm_direction="right_left"
+        app:dm_span="2dp"
+        app:dm_v_space="8dp"
+        app:dm_h_space="16dp"
+        app:dm_sleep="0" />
 
     <Button
         android:layout_width="match_parent"
@@ -32,6 +35,12 @@
         android:layout_height="wrap_content"
         android:onClick="onClickClearScreen"
         android:text="清屏"/>
+
+    <CheckBox
+        android:id="@+id/checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="加入其它样式的弹幕"/>
 
     <Button
         android:layout_width="wrap_content"

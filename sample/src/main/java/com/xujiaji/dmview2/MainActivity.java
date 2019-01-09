@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,15 +18,20 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.xujiaji.dmlib2.widget.DMSurfaceView;
 
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class MainActivity extends AppCompatActivity {
 
     private DMSurfaceView dmSurfaceView;
+    private CheckBox checkBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dmSurfaceView = findViewById(R.id.dmView);
+        checkBox = findViewById(R.id.checkbox);
     }
 
     public void onClickAddDM(View view) {
@@ -48,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         mViewHolder.tvBarrageName.setText(name);
         mViewHolder.tvBarrageMsg.setText(msg);
 //        mViewHolder.imgBarrageHead.setImageBitmap(bitmap);
+        final AtomicInteger atomicInteger = new AtomicInteger();
+        final Random random = new Random();
         Glide.with(this)
                 .load(imgUrl)
                 .into(new SimpleTarget<Drawable>() {
@@ -55,6 +63,15 @@ public class MainActivity extends AppCompatActivity {
                     public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
                         mViewHolder.imgBarrageHead.setImageDrawable(resource);
                         dmSurfaceView.getController().add(templateView);
+
+                        if (!checkBox.isChecked()) {
+                            return;
+                        }
+                        int num = atomicInteger.get() + 1;
+                        if (num < random.nextInt(10)) {
+                            dmSurfaceView.getController().add(LayoutInflater.from(MainActivity.this).inflate(R.layout.barrage_other, null));
+                        }
+                        atomicInteger.set(num);
                     }
                 });
     }

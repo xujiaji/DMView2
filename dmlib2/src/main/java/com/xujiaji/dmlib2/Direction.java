@@ -14,11 +14,11 @@ package com.xujiaji.dmlib2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * 弹幕的运动方向
  */
-public enum Direction
-{
+public enum Direction {
     /**
      * 弹幕从右至左运动(默认方案)
      */
@@ -42,16 +42,13 @@ public enum Direction
 
     public int value;
 
-    Direction(int v)
-    {
+    Direction(int v) {
         value = v;
     }
 
-    public static Direction getType(int value)
-    {
+    public static Direction getType(int value) {
         Direction type;
-        switch (value)
-        {
+        switch (value) {
             case 1:
                 type = Direction.RIGHT_LEFT;
                 break;

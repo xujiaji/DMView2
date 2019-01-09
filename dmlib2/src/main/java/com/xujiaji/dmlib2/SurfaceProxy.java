@@ -19,39 +19,30 @@ import android.graphics.Canvas;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 
-public class SurfaceProxy
-{
+public class SurfaceProxy {
     private Surface mSurface;
     private SurfaceHolder mSurfaceHolder;
 
-    public SurfaceProxy(Surface surface)
-    {
+    public SurfaceProxy(Surface surface) {
         this.mSurface = surface;
     }
 
-    public SurfaceProxy(SurfaceHolder surfaceHolder)
-    {
+    public SurfaceProxy(SurfaceHolder surfaceHolder) {
         this.mSurfaceHolder = surfaceHolder;
     }
 
-    public Canvas lockCanvas()
-    {
-        if (mSurfaceHolder != null)
-        {
+    public Canvas lockCanvas() {
+        if (mSurfaceHolder != null) {
             return mSurfaceHolder.lockCanvas();
-        } else
-        {
+        } else {
             return mSurface.lockCanvas(null);
         }
     }
 
-    public void unlockCanvasAndPost(Canvas canvas)
-    {
-        if (mSurfaceHolder != null)
-        {
+    public void unlockCanvasAndPost(Canvas canvas) {
+        if (mSurfaceHolder != null) {
             mSurfaceHolder.unlockCanvasAndPost(canvas);
-        } else
-        {
+        } else {
             mSurface.unlockCanvasAndPost(canvas);
         }
     }

@@ -14,21 +14,19 @@ package com.xujiaji.dmlib2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import android.util.Log;
 
-public class LogUtil
-{
+public class LogUtil {
     private static final String TAG = "DMLog";
     private static final boolean CLOSE = !BuildConfig.DEBUG;
 
-    public static void e(String msg)
-    {
+    public static void e(String msg) {
         if (CLOSE) return;
         Log.e(TAG, msg);
     }
 
-    public static void i(String msg)
-    {
+    public static void i(String msg) {
         if (CLOSE) return;
         Log.i(TAG, msg);
     }

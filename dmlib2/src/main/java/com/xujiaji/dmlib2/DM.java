@@ -20,7 +20,6 @@ import com.xujiaji.dmlib2.widget.Controller;
 /**
  * 弹幕接口
  */
-public interface DM
-{
+public interface DM {
     Controller getController();
 }

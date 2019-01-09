@@ -1,20 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <attr name="direction">
+    <attr name="dm_direction">
         <enum name="right_left" value="1" />
         <enum name="left_right" value="2" />
         <enum name="up_down"    value="3" />
         <enum name="down_up"    value="4" />
     </attr>
 
-    <attr name="duration" format="integer" />
+    <attr name="dm_span" format="dimension" />
+
+    <attr name="dm_sleep" format="integer" />
+
+    <attr name="dm_v_space" format="dimension" />
+
+    <attr name="dm_h_space" format="dimension" />
 
     <declare-styleable name="DMSurfaceView">
-        <attr name="direction" />
+        <attr name="dm_direction" />
+        <attr name="dm_span" />
+        <attr name="dm_sleep" />
+        <attr name="dm_v_space" />
+        <attr name="dm_h_space" />
     </declare-styleable>
 
     <declare-styleable name="DMTextureView">
-        <attr name="direction" />
+        <attr name="dm_direction" />
+        <attr name="dm_span" />
+        <attr name="dm_sleep" />
+        <attr name="dm_v_space" />
+        <attr name="dm_h_space" />
     </declare-styleable>
 </resources>

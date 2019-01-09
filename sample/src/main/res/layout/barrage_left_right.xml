@@ -5,8 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="@dimen/head_size"
     android:layout_marginBottom="2dp"
-    android:layout_marginTop="2dp"
-    android:padding="4dp">
+    android:layout_marginTop="2dp">
 
 
     <TextView
@@ -16,9 +15,7 @@
         android:layout_marginBottom="2dp"
         android:layout_marginRight="32dp"
         android:layout_marginEnd="32dp"
-        android:includeFontPadding="false"
-        android:layout_gravity="right"
-        android:padding="0dp"
+        android:layout_gravity="end"
         android:text="test"
         android:textColor="#ff8813"
         android:textSize="12sp" />
@@ -27,7 +24,7 @@
         android:id="@+id/tvBarrageMsg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:background="@drawable/shape_barrage_bg"

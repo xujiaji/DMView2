@@ -26,71 +26,80 @@ import com.xujiaji.dmlib2.DM;
 import com.xujiaji.dmlib2.Direction;
 import com.xujiaji.dmlib2.R;
 import com.xujiaji.dmlib2.SurfaceProxy;
+import com.xujiaji.dmlib2.Util;
 
-public class DMTextureView extends TextureView implements TextureView.SurfaceTextureListener, DM
-{
+public class DMTextureView extends TextureView implements TextureView.SurfaceTextureListener, DM {
     private Surface mSurface;
     private Controller mController;
-    private Direction mDirection;
 
-    public DMTextureView(Context context)
-    {
+    public DMTextureView(Context context) {
         this(context, null);
     }
 
-    public DMTextureView(Context context, AttributeSet attrs)
-    {
+    public DMTextureView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public DMTextureView(Context context, AttributeSet attrs, int defStyleAttr)
-    {
+    public DMTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         this.setSurfaceTextureListener(this);
         mController = new Controller();
         setOpaque(false);
-        initAttr(context.obtainStyledAttributes(attrs, R.styleable.DMTextureView, defStyleAttr, 0));
-    }
 
-    /**
-     * 初始化参数
-     */
-    private void initAttr(TypedArray a)
-    {
-        mDirection = Direction.getType(a.getInt(R.styleable.DMTextureView_direction, Direction.RIGHT_LEFT.value));
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.DMTextureView, defStyleAttr, 0);
+
+        final Direction direction = Direction.getType(a.getInt(R.styleable.DMTextureView_dm_direction, Direction.RIGHT_LEFT.value));
+        final int span = a.getDimensionPixelOffset(R.styleable.DMTextureView_dm_span, Util.dp2px(context, 2));
+        final int sleep = a.getInteger(R.styleable.DMTextureView_dm_sleep, 0);
+        final int vSpace = a.getDimensionPixelOffset(R.styleable.DMTextureView_dm_v_space, Util.dp2px(context, 10));
+        final int hSpace = a.getDimensionPixelOffset(R.styleable.DMTextureView_dm_h_space, Util.dp2px(context, 10));
+
         a.recycle();
+
+        mController.setDirection(direction);
+        mController.sethSpace(hSpace);
+        mController.setvSpace(vSpace);
+        mController.setSpan(span);
+        mController.setSleep(sleep);
     }
 
     @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height)
-    {
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         mSurface = new Surface(surface);
-        mController.init(width, height, mDirection, new SurfaceProxy(mSurface));
+        mController.init(width, height, new SurfaceProxy(mSurface));
     }
 
     @Override
-    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height)
-    {
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
 
     }
 
     @Override
-    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface)
-    {
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         mSurface = null;
         mController.destroy();
         return true;
     }
 
     @Override
-    public void onSurfaceTextureUpdated(SurfaceTexture surface)
-    {
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (mSurface == null) return;
+        if (hasWindowFocus) {
+            mController.prepare();
+        } else {
+            mController.pause();
+            mController.draw(0, true);
+        }
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 
     }
 
     @Override
-    public Controller getController()
-    {
+    public Controller getController() {
         return mController;
     }
 }

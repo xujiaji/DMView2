@@ -18,26 +18,42 @@
         <com.xujiaji.dmlib2.widget.DMTextureView
             android:id="@+id/dmDownUp"
             android:layout_width="match_parent"
-            app:direction="down_up"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            app:dm_direction="down_up"
+            app:dm_span="0.5dp"
+            app:dm_v_space="16dp"
+            app:dm_h_space="8dp"
+            app:dm_sleep="2" />
 
         <com.xujiaji.dmlib2.widget.DMTextureView
             android:id="@+id/dmLeftRight"
             android:layout_width="match_parent"
-            app:direction="left_right"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            app:dm_direction="left_right"
+            app:dm_span="0.5dp"
+            app:dm_v_space="8dp"
+            app:dm_h_space="16dp"
+            app:dm_sleep="2"/>
 
         <com.xujiaji.dmlib2.widget.DMTextureView
             android:id="@+id/dmRightLeft"
             android:layout_width="match_parent"
-            app:direction="right_left"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            app:dm_direction="right_left"
+            app:dm_span="0.5dp"
+            app:dm_v_space="8dp"
+            app:dm_h_space="16dp"
+            app:dm_sleep="2" />
 
         <com.xujiaji.dmlib2.widget.DMTextureView
             android:id="@+id/dmUpDown"
             android:layout_width="match_parent"
-            app:direction="up_down"
-            android:layout_height="200dp" />
+            android:layout_height="200dp"
+            app:dm_direction="up_down"
+            app:dm_span="0.5dp"
+            app:dm_v_space="16dp"
+            app:dm_h_space="8dp"
+            app:dm_sleep="2" />
 
 
     </LinearLayout>

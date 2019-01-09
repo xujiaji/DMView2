@@ -26,6 +26,7 @@ import com.xujiaji.dmlib2.DM;
 import com.xujiaji.dmlib2.Direction;
 import com.xujiaji.dmlib2.R;
 import com.xujiaji.dmlib2.SurfaceProxy;
+import com.xujiaji.dmlib2.Util;
 
 /**
  * 用SurfaceView实现弹幕
@@ -35,8 +36,6 @@ import com.xujiaji.dmlib2.SurfaceProxy;
 public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback, DM {
     private SurfaceHolder mSurfaceHolder;
     private Controller mController;
-    private Direction mDirection;
-    private int mDuration = 3000;
     private int mWidth;
     private int mHeight;
 
@@ -52,7 +51,22 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         super(context, attrs, defStyleAttr);
         mController = new Controller();
         initHolder();
-        initAttr(context.obtainStyledAttributes(attrs, R.styleable.DMSurfaceView, defStyleAttr, 0));
+
+        TypedArray a                = context.obtainStyledAttributes(attrs, R.styleable.DMSurfaceView, defStyleAttr, 0);
+
+        final Direction direction   = Direction.getType(a.getInt(R.styleable.DMSurfaceView_dm_direction, Direction.RIGHT_LEFT.value));
+        final int span              = a.getDimensionPixelOffset(R.styleable.DMSurfaceView_dm_span, Util.dp2px(context, 2));
+        final int sleep             = a.getInteger(R.styleable.DMSurfaceView_dm_sleep, 0);
+        final int vSpace            = a.getDimensionPixelOffset(R.styleable.DMSurfaceView_dm_v_space, Util.dp2px(context, 10));
+        final int hSpace            = a.getDimensionPixelOffset(R.styleable.DMSurfaceView_dm_h_space, Util.dp2px(context, 10));
+
+        a.recycle();
+
+        mController.setDirection(direction);
+        mController.sethSpace(hSpace);
+        mController.setvSpace(vSpace);
+        mController.setSpan(span);
+        mController.setSleep(sleep);
     }
 
     private void initHolder() {
@@ -60,14 +74,6 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mSurfaceHolder.addCallback(this);
         setZOrderOnTop(true);
         mSurfaceHolder.setFormat(PixelFormat.TRANSPARENT);
-    }
-
-    /**
-     * 初始化参数
-     */
-    private void initAttr(TypedArray a) {
-        mDirection = Direction.getType(a.getInt(R.styleable.DMSurfaceView_direction, Direction.RIGHT_LEFT.value));
-        a.recycle();
     }
 
     @Override
@@ -80,14 +86,24 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         if (mWidth == width && mHeight == height) return;
         this.mWidth = width;
         this.mHeight = height;
-        mController.init(width, height, mDirection, new SurfaceProxy(mSurfaceHolder));
+        mController.init(width, height, new SurfaceProxy(mSurfaceHolder));
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasWindowFocus) {
+        super.onWindowFocusChanged(hasWindowFocus);
+        if (hasWindowFocus) {
+            mController.prepare();
+        }
+        else {
+            mController.pause();
+            mController.draw(0, true);
+        }
+    }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         mController.pause();
-        holder.getSurface().release();
     }
 
     @Override

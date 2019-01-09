@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout"
+    android:layout_width="wrap_content"
+    android:layout_height="40dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="2dp">
+
+
+    <TextView
+        android:id="@+id/tvBarrageMsg"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/shape_barrage_bg_big"
+        android:paddingLeft="48dp"
+        android:paddingStart="48dp"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="#ff0000"
+        android:gravity="center_vertical"
+        android:text="hello world!"
+        android:layout_gravity="bottom"
+        android:textSize="13sp" />
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/imgBarrageHead"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/boy_head"
+        app:civ_border_width="1dp"
+        app:civ_border_color="#FF000000"/>
+
+</FrameLayout>
