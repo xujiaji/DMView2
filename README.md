@@ -1,198 +1,80 @@
 # DMView2
-[![GitHub release](https://img.shields.io/badge/bintray-0.0.4-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.4)
+[![GitHub release](https://img.shields.io/badge/bintray-0.0.5-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.5)
+# 介绍
+该项目是为了弃用[DMView](https://github.com/xujiaji/DMView)，因为当时刚刚进入实习用RecyclerView动画实现的，性能很差。后来我离职后又再也没管了，不过有很多朋友又使用了`DMView`，本着写出来就要负责的态度，于是写了这个续集。
 
-> 更新
-- 0.0.4: [修复弹幕过长后的不完整](https://github.com/xujiaji/DMView2/issues/1)
+1. `DMView2`不是单纯的只有文字的弹幕，可图文一起；
+2. `DMView2`目前通过两种方式实现，`SurfaceView`和`TextureView`。大家在使用的时候可以自行选择；
+3. `DMView2`只是展示您设置好的View模板，模板可通过写xml布局，并且可以同时添加多种模板；
+4. 如果是视频弹幕的话那么建议用bilibili开源的弹幕更好点；
+5. 本库适合轻量级弹幕，弹幕样式高度自定义（你可以理解为该框架就是个展示传输带，你把要展示的图片扔上去就行了）
+6. *该类库还可以用来展示动态的公告消息*
 
-**目前还不是稳定版，请使用的朋友自行斟酌！(〃'▽'〃)**
-
-> 介绍
-
-1. 改版为了将以前的DMView中的各种问题解决，采用了新的方式实现弹幕效果。
-2. 该弹幕不是单纯的只有文字的弹幕
-3. 该弹幕库通过两种方式实现，SurfaceView和TextureView。大家在使用的时候可以自行选择。
-4. 该弹幕只是展示你设置好的View模板，就是具体弹幕样式需要自己设计。
-
-
-> 测试效果演示
+# 测试效果演示
 
 ![测试Gif展示](img/test.gif)
 
-> 弹幕对照表
+# 方法参照表
 
-|从右往左|从左往右|从上往下|从下往上|
-|-|-|-|-|
-|![right_left](img/right_left.png)|![left_right](img/left_right.png)|![up_down](img/up_down.png)|![down_up](img/down_up.png)|
-
-> 方法参照表
-
-|方法名\xml参数|值|作用|
+|xml参数|值|作用|
 |:-|-|:-|
-|`app:direction="down_up"`|`right_left`、`left_right`<br>`up_down`、`down_up`|`down_up`：弹幕从下往上跑；<br>`up_down`：弹幕从上往下跑；<br>`left_right`：弹幕从左往右跑；<br>`right_left`：弹幕从右往左跑|
-|`app:duration="2000"`|int|设置一个弹幕从显示到消失到时间|
-|`mDMSurfaceView`<br>`.getController()`<br>`.add(templateView);`<br>或<br>`mDMTextureView`<br>`.getController()`<br>`.add(templateView);`|View|`templateView`是一个弹幕的模板样式，并且这个模板已经设置好数据。|
-|`mDMSurfaceView`<br>`.getController()`<br>`.add(templateView);`<br>或<br>`mDMTextureView`<br>`.getController()`<br>`.add(templateView);`|BaseDmEntity|`templateView`是一个弹幕的模板样式，并且这个模板已经设置好数据。自己创建一个弹幕实例|
+|`dm_direction`|`right_left`、`left_right`<br>`up_down`、`down_up`|`down_up`：弹幕从下往上跑；<br>`up_down`：弹幕从上往下跑；<br>`left_right`：弹幕从左往右跑；<br>`right_left`：弹幕从右往左跑|
+|`dm_span`|`dp`|刷新一次界面弹幕所移动的跨度|
+|`dm_sleep`|`int`|每次刷新需要睡眠多久，单位：ms（毫秒）|
+|`dm_v_space`|`dp`|弹幕之间的垂直方向间距|
+|`dm_h_space`|`dp`|弹幕之间的横向间距|
 
-# 如何使用？
+注意： `dm_span`和`dm_sleep`可配合使用，调整弹幕运动速度
 
-## 步骤0
+# 添加依赖
 > build.gradle文件中添加依赖
 
 ```
-implementation 'com.github.xujiaji:dmlib2:0.0.4'
+implementation 'com.github.xujiaji:dmlib2:0.0.5'
 ```
-
-## 步骤1
-> 在布局xml文件中添加，如下：
+# 如何使用？
+## 步骤一
+> 在布局xml文件中添加：
 
 ``` xml
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.xujiaji.dmview2.MainActivity">
-
     <com.xujiaji.dmlib2.widget.DMSurfaceView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
-        app:direction="down_up"
-        app:duration="2000"
-        android:layout_height="200dp" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onClickAddDM"
-        android:text="添加十个弹幕"/>
-</LinearLayout>
+        android:layout_height="200dp"
+        app:dm_direction="right_left"
+        app:dm_span="2dp"
+        app:dm_v_space="8dp"
+        app:dm_h_space="16dp"
+        app:dm_sleep="0" />
 ```
 
-## 步骤2
-> 创建弹幕模板布局，例如：
+## 步骤二
+> 创建弹幕模板布局，可参考
 
-``` xml
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout"
-    android:layout_width="wrap_content"
-    android:layout_height="@dimen/head_size"
-    android:layout_marginTop="2dp"
-    android:padding="4dp"
-    android:layout_marginBottom="2dp">
+[barrage.xml](sample/src/main/res/layout/barrage.xml)<br>
+[announcement_image_text.xml](sample/src/main/res/layout/announcement_image_text.xml)<br>
+[barrage_down_up.xml](sample/src/main/res/layout/barrage_down_up.xml)<br>
+等
 
-
-    <TextView
-        android:id="@+id/tvBarrageName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="32dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginBottom="2dp"
-        android:padding="0dp"
-        android:includeFontPadding="false"
-        android:text="test"
-        android:textColor="#ff8813"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/tvBarrageMsg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:background="@drawable/shape_barrage_bg"
-        android:paddingLeft="16dp"
-        android:paddingStart="16dp"
-        android:paddingRight="16dp"
-        android:paddingEnd="16dp"
-        android:textColor="#ff0000"
-        android:text="sdafjlsaj"
-        android:layout_gravity="bottom"
-        android:textSize="13sp" />
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/imgBarrageHead"
-        android:layout_width="@dimen/head_size"
-        android:layout_height="@dimen/head_size"
-        android:src="@drawable/boy_head"
-        app:civ_border_width="1dp"
-        app:civ_border_color="#FF000000"/>
-</FrameLayout>
-```
-
-## 步骤3
-> 获取DMSurfaceView实例，通过add方法添加弹幕，弹幕为步骤2设置好数据的模板。详细代码如下；(该代码只展示了DMSurfaceView，查看DMTexutureView使用请参考 [TestTextureActivity.java](sample/src/main/java/com/xujiaji/dmview2/TestTextureActivity.java))
+## 步骤三
+> 获取DMSurfaceView实例，通过add方法添加弹幕，弹幕为步骤2设置好数据的模板。
 
 ``` java
-public class MainActivity extends AppCompatActivity {
-
-    private DMSurfaceView dmSurfaceView;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        dmSurfaceView = findViewById(R.id.dmView);
-    }
-
-    public void onClickAddDM(View view)
-    {
-        addDM("小明1", "一条消息1", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3512331237,2033775251&fm=27&gp=0.jpg");
-        addDM("小明2", "消息2 sdaf", "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1881776517,987084327&fm=27&gp=0.jpg");
-        addDM("小明3", "消息3dsf", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=16550438,2220103346&fm=27&gp=0.jpg");
-        addDM("小明4", "消息4ds", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2237097328,2363045038&fm=27&gp=0.jpg");
-        addDM("小明5", "消息5", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=586574978,3261086036&fm=27&gp=0.jpg");
-
-        addDM("小明6", "消息  6", "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3185942390,3143936596&fm=27&gp=0.jpg");
-        addDM("小明7", "消  息7", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=1137298932,366992998&fm=27&gp=0.jpg");
-        addDM("小明8", "消息8", "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1727532235,3210820490&fm=27&gp=0.jpg");
-        addDM("小明9", "消 息9", "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=782046930,1105099424&fm=27&gp=0.jpg");
-        addDM("小明10", "这是最后到消息 10", "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=73760354,2094376027&fm=27&gp=0.jpg");
-    }
-
-    private void addDM(String name, String msg, String imgUrl)
-    {
-        final View templateView = LayoutInflater.from(this).inflate(R.layout.barrage_down_up, null);
-        final ViewHolder mViewHolder = new ViewHolder(templateView);
-        mViewHolder.tvBarrageName.setText(name);
-        mViewHolder.tvBarrageMsg.setText(msg);
-//        mViewHolder.imgBarrageHead.setImageBitmap(bitmap);
-        Glide.with(this)
-                .load(imgUrl)
-                .into(new SimpleTarget<Drawable>()
-                {
-                    @Override
-                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition)
-                    {
-                        mViewHolder.imgBarrageHead.setImageDrawable(resource);
-                        dmSurfaceView.getController().add(templateView);
-                    }
-                });
-    }
-
-    public void onClickGoTestDMTextureView(View view)
-    {
-        startActivity(new Intent(this, TestTextureActivity.class));
-    }
-
-    private static class ViewHolder
-    {
-        TextView tvBarrageName;
-        TextView tvBarrageMsg;
-        ImageView imgBarrageHead;
-
-        ViewHolder(View view)
-        {
-            tvBarrageName = view.findViewById(R.id.tvBarrageName);
-            tvBarrageMsg = view.findViewById(R.id.tvBarrageMsg);
-            imgBarrageHead = view.findViewById(R.id.imgBarrageHead);
-        }
-    }
-}
-
+View view = LayoutInflater.from(this).inflate(R.layout.announcement_text, null);
+mDMSurfaceView.getController().add(view);
 ```
 
+*该代码只展示了DMSurfaceView，查看DMTexutureView使用请参考 [TestTextureActivity.java](sample/src/main/java/com/xujiaji/dmview2/TestTextureActivity.java)*
+
+# 更新
+- 0.0.5
+    + [修复锁屏打开App弹幕卡死又重新创建](https://github.com/xujiaji/DMView2/issues/3)
+    + 重构内部所有实现逻辑
+    + 新增跨度和睡眠时间来控制速度
+    + 修改在xml中使用的属性名
+    + 修改测试案例，添加公告的测试案例
+- 0.0.4
+    + [修复弹幕过长后的不完整](https://github.com/xujiaji/DMView2/issues/1)
 
 # License
 ```

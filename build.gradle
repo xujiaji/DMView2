@@ -41,7 +41,7 @@ ext {
     siteUrl = 'https://github.com/xujiaji/DMView2'
     gitUrl = 'https://github.com/xujiaji/DMView2.git'
 
-    libraryVersion = '0.0.4'
+    libraryVersion = '0.0.5'
 
     developerId = 'xujiaji'
     developerName = 'xujiaji'
