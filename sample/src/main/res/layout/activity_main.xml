@@ -7,6 +7,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.xujiaji.dmview2.MainActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.xujiaji.dmlib2.widget.DMSurfaceView
+            android:id="@+id/dmAnnouncement3"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:dm_direction="right_left"
+            app:dm_span="2dp"
+            app:dm_sleep="0" />
+    </LinearLayout>
+
 
     <TextView
         android:layout_width="match_parent"
@@ -48,4 +62,78 @@
         android:textAllCaps="false"
         android:onClick="onClickGoTestDMTextureView"
         android:text="去测试DMTextureView"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="公告2："/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_announcement"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:scaleType="centerInside"/>
+
+        <com.xujiaji.dmlib2.widget.DMSurfaceView
+            android:id="@+id/dmAnnouncement"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:dm_direction="right_left"
+            app:dm_span="2dp"
+            app:dm_sleep="0" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="公告3："/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_announcement"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:scaleType="centerInside"/>
+
+        <com.xujiaji.dmlib2.widget.DMSurfaceView
+            android:id="@+id/dmAnnouncement2"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:dm_direction="down_up"
+            app:dm_span="0.5dp"
+            app:dm_sleep="80" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="公告4："/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.xujiaji.dmlib2.widget.DMSurfaceView
+            android:id="@+id/dmAnnouncement4"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            app:dm_direction="down_up"
+            app:dm_span="0.5dp"
+            app:dm_sleep="80" />
+    </LinearLayout>
+
+
 </LinearLayout>

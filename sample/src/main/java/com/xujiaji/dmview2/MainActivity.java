@@ -24,6 +24,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MainActivity extends AppCompatActivity {
 
     private DMSurfaceView dmSurfaceView;
+    private DMSurfaceView dmAnnouncement;
+    private DMSurfaceView dmAnnouncement2;
+    private DMSurfaceView dmAnnouncement3;
+    private DMSurfaceView dmAnnouncement4;
     private CheckBox checkBox;
 
     @Override
@@ -31,10 +35,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dmSurfaceView = findViewById(R.id.dmView);
+        dmAnnouncement = findViewById(R.id.dmAnnouncement);
+        dmAnnouncement2 = findViewById(R.id.dmAnnouncement2);
+        dmAnnouncement3 = findViewById(R.id.dmAnnouncement3);
+        dmAnnouncement4 = findViewById(R.id.dmAnnouncement4);
+
         checkBox = findViewById(R.id.checkbox);
     }
 
     public void onClickAddDM(View view) {
+        dmAnnouncement.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_text, null));
+
+        dmAnnouncement2.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_text, null));
+
+        dmAnnouncement3.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_image_text, null));
+
+        dmAnnouncement4.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_image_text, null));
+
         addDM("小明1", "一条消息abcdefghijklmnopqrstuvwxyz123456789 一条消息abcdefghijklmnopqrstuvwxyz123456789 ", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3512331237,2033775251&fm=27&gp=0.jpg");
         addDM("小明2", "消息2 sdaf", "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1881776517,987084327&fm=27&gp=0.jpg");
         addDM("小明3", "消息3dsfabcdefghijklmnopqrstuvwxyz123456789", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=16550438,2220103346&fm=27&gp=0.jpg");
