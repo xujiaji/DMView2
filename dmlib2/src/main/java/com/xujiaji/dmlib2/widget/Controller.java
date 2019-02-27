@@ -18,6 +18,8 @@ package com.xujiaji.dmlib2.widget;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -55,6 +57,7 @@ public class Controller implements Runnable {
     private boolean isH; // 是否是横向跑的
     private ExecutorService exec = Executors.newCachedThreadPool();
     private OnDMAddListener mOnDMAddListener;
+    private Handler mMainHandler;
 
     /**
      * @param width        画布登宽
@@ -86,6 +89,13 @@ public class Controller implements Runnable {
         }
     }
 
+    private Handler getMainHandler() {
+        if (mMainHandler == null) {
+            return new Handler(Looper.getMainLooper());
+        }
+        return mMainHandler;
+    }
+
     @Override
     public void run() {
         while (isRunning) {
@@ -107,6 +117,15 @@ public class Controller implements Runnable {
         }
         else if (mAddedMDList.size() == 0) {
             isRunning = false;
+            if (mOnDMAddListener != null) {
+                getMainHandler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mOnDMAddListener.addedAll();
+                    }
+                });
+
+            }
         }
     }
 
@@ -325,11 +344,18 @@ public class Controller implements Runnable {
         return false;
     }
 
-    private void addToDisplay(BaseDmEntity entity) {
+    private void addToDisplay(final BaseDmEntity entity) {
         mNewDMQueue.remove(entity);
         mAddedMDList.add(entity);
         hierarchy.clear();
-        if (mOnDMAddListener != null) mOnDMAddListener.added(entity);
+        if (mOnDMAddListener != null) {
+            getMainHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    mOnDMAddListener.added(entity);
+                }
+            });
+        }
     }
 
     public void setOnDMAddListener(OnDMAddListener l) {
@@ -357,6 +383,7 @@ public class Controller implements Runnable {
     }
 
     public void destroy() {
+        mMainHandler = null;
         isPause = false;
         isRunning = false;
         mNewDMQueue.clear();
