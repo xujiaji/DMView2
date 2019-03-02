@@ -7,15 +7,19 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.xujiaji.dmlib2.callback.OnDMAddListener;
+import com.xujiaji.dmlib2.entity.BaseDmEntity;
 import com.xujiaji.dmlib2.widget.DMSurfaceView;
 
 import java.util.Random;
@@ -41,10 +45,36 @@ public class MainActivity extends AppCompatActivity {
         dmAnnouncement4 = findViewById(R.id.dmAnnouncement4);
 
         checkBox = findViewById(R.id.checkbox);
+
+        dmSurfaceView.getController().setOnDMAddListener(new OnDMAddListener() {
+            @Override
+            public void added(BaseDmEntity dmEntity) {
+
+            }
+
+            @Override
+            public void addedAll() {
+                Log.e("MainActivity", "thread: " + Thread.currentThread().getName());
+                Toast.makeText(MainActivity.this, "弹幕该轮显示完毕", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void onClickAddDM(View view) {
         dmAnnouncement.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_text, null));
+
+        dmAnnouncement.getController().setOnDMAddListener(new OnDMAddListener() {
+            @Override
+            public void added(BaseDmEntity dmEntity) {
+                dmAnnouncement.getController().add(LayoutInflater.from(MainActivity.this).inflate(R.layout.announcement_text, null));
+            }
+
+            @Override
+            public void addedAll() {
+
+            }
+        });
+
 
         dmAnnouncement2.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_text, null));
 

@@ -4,4 +4,5 @@ import com.xujiaji.dmlib2.entity.BaseDmEntity;
 
 public interface OnDMAddListener {
     void added(BaseDmEntity dmEntity);
+    void addedAll();
 }
