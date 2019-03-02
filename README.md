@@ -1,5 +1,5 @@
 # DMView2
-[![GitHub release](https://img.shields.io/badge/bintray-0.0.5-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.5)
+[![GitHub release](https://img.shields.io/badge/bintray-0.0.6-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.6)
 # 介绍
 该项目是为了弃用[DMView](https://github.com/xujiaji/DMView)，因为当时刚刚进入实习用RecyclerView动画实现的，性能很差。后来我离职后又再也没管了，不过有很多朋友又使用了`DMView`，本着写出来就要负责的态度，于是写了这个续集。
 
@@ -30,11 +30,11 @@
 > build.gradle文件中添加依赖
 
 ```
-implementation 'com.github.xujiaji:dmlib2:0.0.5'
+implementation 'com.github.xujiaji:dmlib2:0.0.6'
 ```
 # 如何使用？
 ## 步骤一
-> 在布局xml文件中添加：
+> 在布局xml文件中添加（或使用`DMTextureView`）：
 
 ``` xml
     <com.xujiaji.dmlib2.widget.DMSurfaceView
@@ -67,6 +67,9 @@ mDMSurfaceView.getController().add(view);
 *该代码只展示了DMSurfaceView，查看DMTexutureView使用请参考 [TestTextureActivity.java](sample/src/main/java/com/xujiaji/dmview2/TestTextureActivity.java)*
 
 # 更新
+- 0.0.6
+    + 低分辨率设备无法显示弹幕
+    + TextureView销毁时释放surface
 - 0.0.5
     + [修复锁屏打开App弹幕卡死又重新创建](https://github.com/xujiaji/DMView2/issues/3)
     + 重构内部所有实现逻辑
