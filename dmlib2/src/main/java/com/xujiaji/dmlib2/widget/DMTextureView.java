@@ -76,6 +76,7 @@ public class DMTextureView extends TextureView implements TextureView.SurfaceTex
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        if (mSurface != null) mSurface.release();
         mSurface = null;
         mController.destroy();
         return true;

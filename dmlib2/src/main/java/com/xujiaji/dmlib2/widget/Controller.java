@@ -406,6 +406,7 @@ public class Controller implements Runnable {
     }
 
     public void setSpan(int span) {
+        if (span == 0) span = 2;
         this.span = span;
     }
 
