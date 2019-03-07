@@ -57,6 +57,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         final Direction direction   = Direction.getType(a.getInt(R.styleable.DMSurfaceView_dm_direction, Direction.RIGHT_LEFT.value));
         final int span              = a.getDimensionPixelOffset(R.styleable.DMSurfaceView_dm_span, Util.dp2px(context, 2));
         final int sleep             = a.getInteger(R.styleable.DMSurfaceView_dm_sleep, 0);
+        final int spanTime          = a.getInteger(R.styleable.DMSurfaceView_dm_span_time, 0);
         final int vSpace            = a.getDimensionPixelOffset(R.styleable.DMSurfaceView_dm_v_space, Util.dp2px(context, 10));
         final int hSpace            = a.getDimensionPixelOffset(R.styleable.DMSurfaceView_dm_h_space, Util.dp2px(context, 10));
 
@@ -66,7 +67,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         mController.sethSpace(hSpace);
         mController.setvSpace(vSpace);
         mController.setSpan(span);
-        mController.setSleep(sleep);
+        mController.setSpanTime(spanTime == 0 ? sleep : spanTime);
     }
 
     private void initHolder() {
@@ -97,7 +98,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }
         else {
             mController.pause();
-            mController.draw(0, true);
+//            mController.draw(0, true);
         }
     }
 

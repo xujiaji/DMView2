@@ -16,7 +16,7 @@ package com.xujiaji.dmlib2.entity;
  */
 
 import android.graphics.Bitmap;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.View;
 
 import com.xujiaji.dmlib2.Direction;
@@ -29,7 +29,7 @@ import com.xujiaji.dmlib2.Util;
 
 public class BaseDmEntity implements Comparable<BaseDmEntity> {
     public final Bitmap bitmap;
-    public final Rect rect = new Rect();
+    public final RectF rect = new RectF();
     public final int priority;
 
     public BaseDmEntity(View itemView) {

@@ -18,7 +18,7 @@
             android:layout_height="30dp"
             app:dm_direction="right_left"
             app:dm_span="2dp"
-            app:dm_sleep="0" />
+            app:dm_span_time="0" />
     </LinearLayout>
 
 
@@ -36,7 +36,7 @@
         app:dm_span="2dp"
         app:dm_v_space="8dp"
         app:dm_h_space="16dp"
-        app:dm_sleep="0" />
+        app:dm_span_time="0" />
 
     <Button
         android:layout_width="match_parent"
@@ -87,7 +87,7 @@
             android:layout_height="30dp"
             app:dm_direction="right_left"
             app:dm_span="2dp"
-            app:dm_sleep="0" />
+            app:dm_span_time="0" />
     </LinearLayout>
 
     <TextView
@@ -114,7 +114,7 @@
             android:layout_height="30dp"
             app:dm_direction="down_up"
             app:dm_span="0.5dp"
-            app:dm_sleep="80" />
+            app:dm_span_time="80" />
     </LinearLayout>
 
     <TextView
@@ -132,7 +132,7 @@
             android:layout_height="30dp"
             app:dm_direction="down_up"
             app:dm_span="0.5dp"
-            app:dm_sleep="80" />
+            app:dm_span_time="80" />
     </LinearLayout>
 
 

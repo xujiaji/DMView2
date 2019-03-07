@@ -12,6 +12,8 @@
 
     <attr name="dm_sleep" format="integer" />
 
+    <attr name="dm_span_time" format="integer" />
+
     <attr name="dm_v_space" format="dimension" />
 
     <attr name="dm_h_space" format="dimension" />
@@ -19,6 +21,7 @@
     <declare-styleable name="DMSurfaceView">
         <attr name="dm_direction" />
         <attr name="dm_span" />
+        <attr name="dm_span_time" />
         <attr name="dm_sleep" />
         <attr name="dm_v_space" />
         <attr name="dm_h_space" />
@@ -27,6 +30,7 @@
     <declare-styleable name="DMTextureView">
         <attr name="dm_direction" />
         <attr name="dm_span" />
+        <attr name="dm_span_time" />
         <attr name="dm_sleep" />
         <attr name="dm_v_space" />
         <attr name="dm_h_space" />

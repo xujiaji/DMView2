@@ -20,6 +20,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -47,13 +48,14 @@ public class Controller implements Runnable {
     private List<BaseDmEntity> mAddedMDList = new LinkedList<>();
     private SurfaceProxy mSurfaceProxy;
     private int mWidth, mHeight;
-    private int offset;
+    private float offset;
     private int hSpace = 20;// 水平间距
     private int vSpace = 20;// 垂直间距
     private boolean isRunning;
     private boolean isPause;// 是否是暂停状态
-    private int span = 5;// 刷新一次的跨度
-    private long sleep = 0L; // 刷新一次睡多久, ms
+    private float span = 5F;// 刷新一次的跨度
+    private long spanTime = 0L; // 一个跨度需要多少时间
+    private float speed = 0F; //速度
     private boolean isH; // 是否是横向跑的
     private ExecutorService exec = Executors.newCachedThreadPool();
     private OnDMAddListener mOnDMAddListener;
@@ -87,6 +89,7 @@ public class Controller implements Runnable {
                 if (span > 0) span = -span;
                 break;
         }
+        updateSpeed();
     }
 
     private Handler getMainHandler() {
@@ -100,17 +103,24 @@ public class Controller implements Runnable {
     public void run() {
         while (isRunning) {
             runTask();
-            if (sleep == 0L) continue;
-            try {
-                Thread.sleep(sleep);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 
+    private long lastTime = 0L;
     private void runTask() {
-        offset += span;
+
+        if (spanTime > 0) {
+            long time = SystemClock.uptimeMillis() % spanTime;
+            long disTime = time - lastTime;
+            if (disTime > 0) {
+                float s = speed * disTime;
+                offset += s;
+            }
+            lastTime = time;
+        } else {
+            offset += span;
+        }
+
         draw(offset, false);
         if (addDMInQueue()) {
 
@@ -129,7 +139,7 @@ public class Controller implements Runnable {
         }
     }
 
-    void draw(int value, boolean isOnlyClear) {
+    void draw(float value, boolean isOnlyClear) {
         Canvas canvas = null;
         try {
             canvas = mSurfaceProxy.lockCanvas();
@@ -219,8 +229,8 @@ public class Controller implements Runnable {
         BaseDmEntity entity = mNewDMQueue.peek();
 
         if (entity == null) return false;
-        final int minLimit;
-        final int maxLimit;
+        final float minLimit;
+        final float maxLimit;
         switch (mDirection) {
             case RIGHT_LEFT:
                 minLimit = mWidth - offset;
@@ -251,18 +261,18 @@ public class Controller implements Runnable {
 
         if (isH) {
             for (BaseDmEntity addedDM: mAddedMDList) {
-                if (hierarchy.get(addedDM.rect.top) == null) {// 没有初始化的情况
-                    hierarchy.put(addedDM.rect.top, new LinkedList<BaseDmEntity>());
+                if (hierarchy.get((int)addedDM.rect.top) == null) {// 没有初始化的情况
+                    hierarchy.put((int)addedDM.rect.top, new LinkedList<BaseDmEntity>());
                 }
-                hierarchy.get(addedDM.rect.top).addFirst(addedDM);
+                hierarchy.get((int)addedDM.rect.top).addFirst(addedDM);
             }
         }
         else {
             for (BaseDmEntity addedDM: mAddedMDList) {
-                if (hierarchy.get(addedDM.rect.left) == null) {// 没有初始化的情况
-                    hierarchy.put(addedDM.rect.left, new LinkedList<BaseDmEntity>());
+                if (hierarchy.get((int)addedDM.rect.left) == null) {// 没有初始化的情况
+                    hierarchy.put((int)addedDM.rect.left, new LinkedList<BaseDmEntity>());
                 }
-                hierarchy.get(addedDM.rect.left).addFirst(addedDM);
+                hierarchy.get((int)addedDM.rect.left).addFirst(addedDM);
             }
         }
 
@@ -408,9 +418,17 @@ public class Controller implements Runnable {
     public void setSpan(int span) {
         if (span == 0) span = 2;
         this.span = span;
+        updateSpeed();
     }
 
-    public void setSleep(long sleep) {
-        this.sleep = sleep;
+    public void setSpanTime(long spanTime) {
+        this.spanTime = spanTime;
+        updateSpeed();
+    }
+
+    private void updateSpeed() {
+        if (spanTime > 0L && span != 0) {
+            speed = span / spanTime;
+        }
     }
 }
