@@ -20,7 +20,8 @@
 |:-|-|:-|
 |`dm_direction`|`right_left`、`left_right`<br>`up_down`、`down_up`|`down_up`：弹幕从下往上跑；<br>`up_down`：弹幕从上往下跑；<br>`left_right`：弹幕从左往右跑；<br>`right_left`：弹幕从右往左跑|
 |`dm_span`|`dp`|刷新一次界面弹幕所移动的跨度|
-|`dm_sleep`|`int`|每次刷新需要睡眠多久，单位：ms（毫秒）|
+|`dm_span_time`|`int`|每个跨度需要的时间，单位：ms（毫秒）|
+|~~`dm_sleep`~~|~~`int`~~|~~每次刷新需要睡眠多久，单位：ms（毫秒）~~|
 |`dm_v_space`|`dp`|弹幕之间的垂直方向间距|
 |`dm_h_space`|`dp`|弹幕之间的横向间距|
 
@@ -45,7 +46,7 @@ implementation 'com.github.xujiaji:dmlib2:0.0.6'
         app:dm_span="2dp"
         app:dm_v_space="8dp"
         app:dm_h_space="16dp"
-        app:dm_sleep="0" />
+        app:dm_span_time="0" />
 ```
 
 ## 步骤二
