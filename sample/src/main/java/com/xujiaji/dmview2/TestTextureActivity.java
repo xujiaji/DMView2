@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatSeekBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -22,6 +24,10 @@ public class TestTextureActivity extends AppCompatActivity {
     private DMTextureView dmRightLeft;
     private DMTextureView dmUpDown;
     private DMTextureView dmDownUp;
+    private AppCompatSeekBar seekBarSpan;
+    private AppCompatSeekBar seekBarSpanTime;
+    private TextView dpValue;
+    private TextView msValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +37,53 @@ public class TestTextureActivity extends AppCompatActivity {
         dmUpDown = findViewById(R.id.dmUpDown);
         dmRightLeft = findViewById(R.id.dmRightLeft);
         dmLeftRight = findViewById(R.id.dmLeftRight);
+        seekBarSpan = findViewById(R.id.seekBarSpan);
+        seekBarSpanTime = findViewById(R.id.seekBarSpanTime);
+        dpValue = findViewById(R.id.dpValue);
+        msValue = findViewById(R.id.msValue);
+
+        seekBarSpan.setMax(39);
+        seekBarSpanTime.setMax(400);
+        seekBarSpanTime.setProgress(40);
+
+        seekBarSpan.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                int value = i + 1;
+                dmRightLeft.getController().setSpan(value);
+                dpValue.setText(String.format("%sdp", value));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seekBarSpanTime.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                int value = i;
+                dmRightLeft.getController().setSpanTime(value);
+                msValue.setText(String.format("%sms", value));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
 
     public void onClickAddDM(View view)

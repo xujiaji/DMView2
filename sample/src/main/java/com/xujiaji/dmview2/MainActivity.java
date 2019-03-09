@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.xujiaji.dmlib2.LogUtil;
 import com.xujiaji.dmlib2.callback.OnDMAddListener;
 import com.xujiaji.dmlib2.entity.BaseDmEntity;
 import com.xujiaji.dmlib2.widget.DMSurfaceView;
@@ -58,6 +59,17 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "弹幕该轮显示完毕", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LogUtil.e("MainActivity onPause()");
+        dmSurfaceView.getController().pause();
+        dmAnnouncement.getController().pause();
+        dmAnnouncement2.getController().pause();
+        dmAnnouncement3.getController().pause();
+        dmAnnouncement4.getController().pause();
     }
 
     public void onClickAddDM(View view) {

@@ -54,12 +54,13 @@ public class Controller implements Runnable {
     private boolean isRunning;
     private boolean isPause;// 是否是暂停状态
     private float span = 5F;// 刷新一次的跨度
-    private long spanTime = 0L; // 一个跨度需要多少时间
+    private int spanTime = 0; // 一个跨度需要多少时间
     private float speed = 0F; //速度
     private boolean isH; // 是否是横向跑的
     private ExecutorService exec = Executors.newCachedThreadPool();
     private OnDMAddListener mOnDMAddListener;
     private Handler mMainHandler;
+    private Thread mThread;
 
     /**
      * @param width        画布登宽
@@ -110,13 +111,13 @@ public class Controller implements Runnable {
     private void runTask() {
 
         if (spanTime > 0) {
-            long time = SystemClock.uptimeMillis() % spanTime;
-            long disTime = time - lastTime;
-            if (disTime > 0) {
-                float s = speed * disTime;
-                offset += s;
+            final long nowTime = SystemClock.uptimeMillis();
+            final long disTime = nowTime - lastTime;
+            if (lastTime != 0L && disTime < 100) { // 第一次进入时lastTime=0，同时暂停后的时间差比较大如果大于100ms就可以判断为暂停过，需要从新计时
+                offset += speed * disTime;
             }
-            lastTime = time;
+            LogUtil.i("disTime = " + disTime + ", offset = " + offset + ", speed = " + speed);
+            lastTime = nowTime;
         } else {
             offset += span;
         }
@@ -376,18 +377,24 @@ public class Controller implements Runnable {
         if (isRunning) return;
         initOffset();
         isRunning = true;
-        new Thread(this).start();
+        mThread = new Thread(this);
+        mThread.start();
     }
 
     public void prepare() {
         if (isPause) {
             isPause = false;
             isRunning = true;
-            new Thread(this).start();
+            mThread = new Thread(this);
+            mThread.start();
         }
     }
 
     public void pause() {
+        if (mThread != null && !mThread.isInterrupted()) {
+            LogUtil.e("mThread call interrupt()");
+            mThread.interrupt();
+        }
         isPause = true;
         isRunning = false;
     }
@@ -417,11 +424,11 @@ public class Controller implements Runnable {
 
     public void setSpan(int span) {
         if (span == 0) span = 2;
-        this.span = span;
+        this.span = this.span < 0 ? -span : span;
         updateSpeed();
     }
 
-    public void setSpanTime(long spanTime) {
+    public void setSpanTime(int spanTime) {
         this.spanTime = spanTime;
         updateSpeed();
     }

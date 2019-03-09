@@ -16,34 +16,80 @@
             android:text="每个添加五个弹幕"/>
 
         <com.xujiaji.dmlib2.widget.DMTextureView
+            android:id="@+id/dmRightLeft"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            app:dm_direction="right_left"
+            app:dm_span="1dp"
+            app:dm_v_space="8dp"
+            app:dm_h_space="16dp"
+            app:dm_span_time="40" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="　　  设置跨度"/>
+            <android.support.v7.widget.AppCompatSeekBar
+                android:id="@+id/seekBarSpan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+            <TextView
+                android:id="@+id/dpValue"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="1dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="每跨度耗时ms"/>
+            <android.support.v7.widget.AppCompatSeekBar
+                android:id="@+id/seekBarSpanTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:id="@+id/msValue"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="40ms"/>
+        </LinearLayout>
+
+
+        <com.xujiaji.dmlib2.widget.DMTextureView
             android:id="@+id/dmDownUp"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             app:dm_direction="down_up"
-            app:dm_span="6dp"
+            app:dm_span="16dp"
             app:dm_v_space="16dp"
             app:dm_h_space="8dp"
-            app:dm_span_time="300" />
+            app:dm_span_time="100" />
 
         <com.xujiaji.dmlib2.widget.DMTextureView
             android:id="@+id/dmLeftRight"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             app:dm_direction="left_right"
-            app:dm_span="2dp"
+            app:dm_span="6dp"
             app:dm_v_space="8dp"
             app:dm_h_space="16dp"
             app:dm_span_time="80"/>
-
-        <com.xujiaji.dmlib2.widget.DMTextureView
-            android:id="@+id/dmRightLeft"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            app:dm_direction="right_left"
-            app:dm_span="10dp"
-            app:dm_v_space="8dp"
-            app:dm_h_space="16dp"
-            app:dm_span_time="300" />
 
         <com.xujiaji.dmlib2.widget.DMTextureView
             android:id="@+id/dmUpDown"
@@ -53,7 +99,7 @@
             app:dm_span="16dp"
             app:dm_v_space="16dp"
             app:dm_h_space="8dp"
-            app:dm_span_time="300" />
+            app:dm_span_time="100" />
 
 
     </LinearLayout>

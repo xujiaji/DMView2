@@ -24,6 +24,7 @@ import android.view.SurfaceView;
 
 import com.xujiaji.dmlib2.DM;
 import com.xujiaji.dmlib2.Direction;
+import com.xujiaji.dmlib2.LogUtil;
 import com.xujiaji.dmlib2.R;
 import com.xujiaji.dmlib2.SurfaceProxy;
 import com.xujiaji.dmlib2.Util;
@@ -93,6 +94,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     @Override
     public void onWindowFocusChanged(boolean hasWindowFocus) {
         super.onWindowFocusChanged(hasWindowFocus);
+        LogUtil.e("DMSurfaceView onWindowFocusChanged() - > " + hasWindowFocus);
         if (hasWindowFocus) {
             mController.prepare();
         }
@@ -104,12 +106,14 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        LogUtil.e("DMSurfaceView surfaceDestroyed()");
         mController.pause();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        LogUtil.e("DMSurfaceView onDetachedFromWindow()");
         mController.destroy();
     }
 
