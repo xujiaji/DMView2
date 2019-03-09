@@ -64,6 +64,18 @@ View view = LayoutInflater.from(this).inflate(R.layout.announcement_text, null);
 mDMSurfaceView.getController().add(view);
 ```
 
+#### 注意：
+
+如果您使用的DMSurfaceView，需要在Activity或Fragment的onPause周期中调用暂停，如下：
+
+``` java
+    @Override
+    protected void onPause() {
+        super.onPause();
+        dmSurfaceView.getController().pause();
+    }
+```
+
 *该代码只展示了DMSurfaceView，查看DMTexutureView使用请参考 [TestTextureActivity.java](sample/src/main/java/com/xujiaji/dmview2/TestTextureActivity.java)*
 
 # 更新
