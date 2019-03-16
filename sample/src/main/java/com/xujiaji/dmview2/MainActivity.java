@@ -20,8 +20,10 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.xujiaji.dmlib2.LogUtil;
 import com.xujiaji.dmlib2.callback.OnDMAddListener;
+import com.xujiaji.dmlib2.callback.ViewCreator;
 import com.xujiaji.dmlib2.entity.BaseDmEntity;
 import com.xujiaji.dmlib2.widget.DMSurfaceView;
+import com.xujiaji.dmlib2.widget.DMTextureView;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -128,7 +130,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                         int num = atomicInteger.get() + 1;
                         if (num < random.nextInt(10)) {
-                            dmSurfaceView.getController().add(LayoutInflater.from(MainActivity.this).inflate(R.layout.barrage_other, null));
+                            dmSurfaceView.getController().add(new ViewCreator() {
+                                @Override
+                                public View build() {
+                                    return LayoutInflater.from(MainActivity.this).inflate(R.layout.barrage_other, null);
+                                }
+                            });
                         }
                         atomicInteger.set(num);
                     }

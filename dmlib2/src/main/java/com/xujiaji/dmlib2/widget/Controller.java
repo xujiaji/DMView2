@@ -28,12 +28,13 @@ import com.xujiaji.dmlib2.Direction;
 import com.xujiaji.dmlib2.LogUtil;
 import com.xujiaji.dmlib2.SurfaceProxy;
 import com.xujiaji.dmlib2.callback.OnDMAddListener;
+import com.xujiaji.dmlib2.callback.ViewCreator;
 import com.xujiaji.dmlib2.entity.BaseDmEntity;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,7 +44,7 @@ import java.util.concurrent.Executors;
 public class Controller implements Runnable {
     private Direction mDirection = Direction.RIGHT_LEFT;
     // 新弹幕
-    private PriorityQueue<BaseDmEntity> mNewDMQueue = new PriorityQueue<>();
+    private Queue<BaseDmEntity> mNewDMQueue = new LinkedList<>();
     // 已添加到屏幕的弹幕
     private List<BaseDmEntity> mAddedMDList = new LinkedList<>();
     private SurfaceProxy mSurfaceProxy;
@@ -207,7 +208,17 @@ public class Controller implements Runnable {
 
     }
 
-    public synchronized void add(final View templateView) {
+    public void add(final ViewCreator viewCreater) {
+        exec.execute(new Runnable() {
+            @Override
+            public void run() {
+                BaseDmEntity entity = new BaseDmEntity(viewCreater.build());
+                addToQueue(entity);
+            }
+        });
+    }
+
+    public void add(final View templateView) {
         exec.execute(new Runnable() {
             @Override
             public void run() {
@@ -217,7 +228,7 @@ public class Controller implements Runnable {
         });
     }
 
-    public synchronized void addToQueue(BaseDmEntity entity) {
+    public void addToQueue(BaseDmEntity entity) {
         if (entity == null) throw new RuntimeException("entity cannot null");
         mNewDMQueue.add(entity);
         if (!isRunning) {
@@ -356,6 +367,7 @@ public class Controller implements Runnable {
     }
 
     private void addToDisplay(final BaseDmEntity entity) {
+        if (entity == null) return;
         mNewDMQueue.remove(entity);
         mAddedMDList.add(entity);
         hierarchy.clear();

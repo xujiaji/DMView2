@@ -68,6 +68,7 @@ public class DMTextureView extends TextureView implements TextureView.SurfaceTex
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         mSurface = new Surface(surface);
         mController.init(width, height, new SurfaceProxy(mSurface));
+        mController.draw(0, true);
     }
 
     @Override
@@ -91,7 +92,6 @@ public class DMTextureView extends TextureView implements TextureView.SurfaceTex
             mController.prepare();
         } else {
             mController.pause();
-            mController.draw(0, true);
         }
     }
 

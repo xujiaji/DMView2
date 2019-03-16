@@ -27,7 +27,7 @@ import com.xujiaji.dmlib2.Util;
  * Created by jiaji on 2018/2/26.
  */
 
-public class BaseDmEntity implements Comparable<BaseDmEntity> {
+public class BaseDmEntity {
     public final Bitmap bitmap;
     public final RectF rect = new RectF();
     public final int priority;
@@ -60,16 +60,17 @@ public class BaseDmEntity implements Comparable<BaseDmEntity> {
         throw new RuntimeException("not direction " + direction.name() + " in 'isNeedDraw()'");
     }
 
-    @Override
-    public int compareTo(BaseDmEntity o) {
-        if (this.priority > o.priority) {
-            return 1;
-        } else if (this.priority < o.priority) {
-            return -1;
-        } else {
-            return 0;
-        }
-    }
+//    @Override
+//    public int compareTo(BaseDmEntity o) {
+//        if (o == null) return 0;
+//        if (this.priority > o.priority) {
+//            return 1;
+//        } else if (this.priority < o.priority) {
+//            return -1;
+//        } else {
+//            return 0;
+//        }
+//    }
 
     @Override
     public boolean equals(Object obj) {

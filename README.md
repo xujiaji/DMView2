@@ -35,10 +35,10 @@ implementation 'com.github.xujiaji:dmlib2:0.0.6'
 ```
 # 如何使用？
 ## 步骤一
-> 在布局xml文件中添加（或使用`DMTextureView`）：
+> 在布局xml文件中添加（或使用`DMSurfaceView`）：
 
 ``` xml
-    <com.xujiaji.dmlib2.widget.DMSurfaceView
+    <com.xujiaji.dmlib2.widget.DMTextureView
         android:id="@+id/dmView"
         android:layout_width="match_parent"
         android:layout_height="200dp"
@@ -46,7 +46,7 @@ implementation 'com.github.xujiaji:dmlib2:0.0.6'
         app:dm_span="2dp"
         app:dm_v_space="8dp"
         app:dm_h_space="16dp"
-        app:dm_span_time="0" />
+        app:dm_span_time="16" />
 ```
 
 ## 步骤二
@@ -65,9 +65,20 @@ View view = LayoutInflater.from(this).inflate(R.layout.announcement_text, null);
 mDMSurfaceView.getController().add(view);
 ```
 
+或者子线程中添加
+
+``` java
+dmSurfaceView.getController().add(new ViewCreator() {
+    @Override
+    public View build() {
+        return LayoutInflater.from(MainActivity.this).inflate(R.layout.barrage_other, null);
+    }
+});
+```
+
 #### 注意：
 
-如果您使用的DMSurfaceView，需要在Activity或Fragment的onPause周期中调用暂停，如下：
+最好在Activity或Fragment的onPause周期中调用下暂停，如下：
 
 ``` java
     @Override

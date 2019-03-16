@@ -100,7 +100,6 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }
         else {
             mController.pause();
-//            mController.draw(0, true);
         }
     }
 
