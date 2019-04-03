@@ -52,8 +52,8 @@ public class Controller implements Runnable {
     private float offset;
     private int hSpace = 20;// 水平间距
     private int vSpace = 20;// 垂直间距
-    private boolean isRunning;
-    private boolean isPause;// 是否是暂停状态
+    private volatile boolean isRunning;
+    private volatile boolean isPause;// 是否是暂停状态
     private float span = 5F;// 刷新一次的跨度
     private int spanTime = 0; // 一个跨度需要多少时间
     private float speed = 0F; //速度
@@ -228,7 +228,7 @@ public class Controller implements Runnable {
         });
     }
 
-    public void addToQueue(BaseDmEntity entity) {
+    public synchronized void addToQueue(BaseDmEntity entity) {
         if (entity == null) throw new RuntimeException("entity cannot null");
         mNewDMQueue.add(entity);
         if (!isRunning) {
@@ -366,7 +366,7 @@ public class Controller implements Runnable {
         return false;
     }
 
-    private void addToDisplay(final BaseDmEntity entity) {
+    private synchronized void addToDisplay(final BaseDmEntity entity) {
         if (entity == null) return;
         mNewDMQueue.remove(entity);
         mAddedMDList.add(entity);

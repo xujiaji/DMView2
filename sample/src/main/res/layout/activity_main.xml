@@ -47,6 +47,12 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="onClickAdd5NoOver"
+        android:text="轮询的加5个弹幕"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:onClick="onClickClearScreen"
         android:text="清屏"/>
 

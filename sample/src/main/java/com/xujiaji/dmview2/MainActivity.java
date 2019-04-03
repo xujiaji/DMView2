@@ -4,6 +4,7 @@ package com.xujiaji.dmview2;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -36,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private DMSurfaceView dmAnnouncement3;
     private DMSurfaceView dmAnnouncement4;
     private CheckBox checkBox;
+//    private final Handler handler = new Handler();
+//
+//    private Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,10 @@ public class MainActivity extends AppCompatActivity {
         dmAnnouncement2.getController().pause();
         dmAnnouncement3.getController().pause();
         dmAnnouncement4.getController().pause();
+//        if (runnable != null) {
+//            handler.removeCallbacks(runnable);
+//            runnable = null;
+//        }
     }
 
     public void onClickAddDM(View view) {
@@ -107,6 +115,38 @@ public class MainActivity extends AppCompatActivity {
         addDM("小明8", "消息8", "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=1727532235,3210820490&fm=27&gp=0.jpg");
         addDM("小明9", "消 息9", "https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=782046930,1105099424&fm=27&gp=0.jpg");
         addDM("小明10", "这是最后到消息 10", "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=73760354,2094376027&fm=27&gp=0.jpg");
+    }
+
+    CustomTimer mCustomTimer;
+    public void onClickAdd5NoOver(View view) {
+        mCustomTimer = new CustomTimer(20000) {
+            @Override
+            public void onTick() {
+                addDM("小明11", "1111111111111111111111111111111111 11111111111 ", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3512331237,2033775251&fm=27&gp=0.jpg");
+                addDM("小明21", "21212121212121212121212121212121212121消息2 sdaf", "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1881776517,987084327&fm=27&gp=0.jpg");
+                addDM("小明31", "31313131313131313131313131313131313131313消息3dsfabcdefghi", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=16550438,2220103346&fm=27&gp=0.jpg");
+                addDM("小明41", "4141414141414141414141414141414141414141414141414141414141414消息4ds", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2237097328,2363045038&fm=27&gp=0.jpg");
+                addDM("小明51", "51515151515151515151515151515151515151515151515151消息5", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=586574978,3261086036&fm=27&gp=0.jpg");
+            }
+        };
+        mCustomTimer.start();
+//        if (runnable == null) {
+//            runnable = new Runnable() {
+//                @Override
+//                public void run() {
+//                    addDM("小明11", "1111111111111111111111111111111111 11111111111 ", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3512331237,2033775251&fm=27&gp=0.jpg");
+//                    addDM("小明21", "21212121212121212121212121212121212121消息2 sdaf", "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1881776517,987084327&fm=27&gp=0.jpg");
+//                    addDM("小明31", "31313131313131313131313131313131313131313消息3dsfabcdefghi", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=16550438,2220103346&fm=27&gp=0.jpg");
+//                    addDM("小明41", "4141414141414141414141414141414141414141414141414141414141414消息4ds", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2237097328,2363045038&fm=27&gp=0.jpg");
+//                    addDM("小明51", "51515151515151515151515151515151515151515151515151消息5", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=586574978,3261086036&fm=27&gp=0.jpg");
+//
+//                    if (runnable != null) {
+//                        handler.postDelayed(runnable, 10000);
+//                    }
+//                }
+//            };
+//            handler.post(runnable);
+//        }
     }
 
     private void addDM(String name, String msg, String imgUrl) {
