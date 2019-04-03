@@ -1,5 +1,8 @@
 # DMView2
 [![GitHub release](https://img.shields.io/badge/bintray-0.0.6-brightgreen.svg)](https://bintray.com/xujiaji/maven/dmlib2/0.0.6)
+
+> **建议下载主分支类库[dmlib2](dmlib2)导入项目，由于项目目前并不稳定，并伴随经常修改，短时间不会继续发布远程仓库版本**
+
 # 介绍
 该项目是为了弃用[DMView](https://github.com/xujiaji/DMView)，因为当时刚刚进入实习用RecyclerView动画实现的，性能很差。后来我离职后又再也没管了，不过有很多朋友又使用了`DMView`，本着写出来就要负责的态度，于是写了这个续集。
 
