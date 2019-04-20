@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.xujiaji.dmlib2.entity.BaseDmEntity;
 import com.xujiaji.dmlib2.widget.DMTextureView;
 
 public class TestTextureActivity extends AppCompatActivity {
@@ -101,7 +102,7 @@ public class TestTextureActivity extends AppCompatActivity {
 //        addDM("小明10", "这是最后到消息 10", "https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=73760354,2094376027&fm=27&gp=0.jpg");
     }
 
-    private void addDM(String name, String msg, String imgUrl)
+    private void addDM(final String name, String msg, String imgUrl)
     {
         final View templateViewDownUp = LayoutInflater.from(this).inflate(R.layout.barrage_down_up, null);
         final ViewHolder mViewHolderDownUp = new ViewHolder(templateViewDownUp);
@@ -137,7 +138,10 @@ public class TestTextureActivity extends AppCompatActivity {
                         dmUpDown.getController().add(templateViewUpDown);
 
                         mViewHolderRightLeft.imgBarrageHead.setImageDrawable(resource);
-                        dmRightLeft.getController().add(templateViewRightLeft);
+//                        dmRightLeft.getController().add(templateViewRightLeft);
+                        BaseDmEntity entity = new BaseDmEntity(templateViewRightLeft);
+                        entity.title = name;
+                        dmRightLeft.getController().addToQueue(entity);
 
                         mViewHolderLeftRight.imgBarrageHead.setImageDrawable(resource);
                         dmLeftRight.getController().add(templateViewLeftRight);

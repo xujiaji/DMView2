@@ -49,7 +49,7 @@ public class Controller implements Runnable {
     private List<BaseDmEntity> mAddedMDList = new LinkedList<>();
     private SurfaceProxy mSurfaceProxy;
     private int mWidth, mHeight;
-    private float offset;
+    private volatile float offset;
     private int hSpace = 20;// 水平间距
     private int vSpace = 20;// 垂直间距
     private volatile boolean isRunning;
@@ -449,5 +449,13 @@ public class Controller implements Runnable {
         if (spanTime > 0L && span != 0) {
             speed = span / spanTime;
         }
+    }
+
+    public float getOffset() {
+        return offset;
+    }
+
+    public List<BaseDmEntity> getAddedMDList() {
+        return mAddedMDList;
     }
 }

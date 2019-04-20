@@ -29,8 +29,9 @@ import com.xujiaji.dmlib2.Util;
 
 public class BaseDmEntity {
     public final Bitmap bitmap;
-    public final RectF rect = new RectF();
+    public volatile RectF rect = new RectF();
     public final int priority;
+    public volatile String title;
 
     public BaseDmEntity(View itemView) {
         this(itemView, 0);

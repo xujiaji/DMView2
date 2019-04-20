@@ -19,14 +19,18 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
+import android.widget.Toast;
 
 import com.xujiaji.dmlib2.DM;
 import com.xujiaji.dmlib2.Direction;
+import com.xujiaji.dmlib2.LogUtil;
 import com.xujiaji.dmlib2.R;
 import com.xujiaji.dmlib2.SurfaceProxy;
 import com.xujiaji.dmlib2.Util;
+import com.xujiaji.dmlib2.entity.BaseDmEntity;
 
 public class DMTextureView extends TextureView implements TextureView.SurfaceTextureListener, DM {
     private Surface mSurface;
@@ -62,6 +66,27 @@ public class DMTextureView extends TextureView implements TextureView.SurfaceTex
         mController.setvSpace(vSpace);
         mController.setSpan(span);
         mController.setSpanTime(spanTime == 0 ? sleep : spanTime);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        LogUtil.e("event ....");
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                LogUtil.e("event down ....");
+                return true;
+            case MotionEvent.ACTION_UP:
+                LogUtil.e("event up ....");
+                float upX = event.getX();
+                float upY = event.getY();
+                for (BaseDmEntity entity : mController.getAddedMDList()) {
+                    if (entity.rect.contains(upX - mController.getOffset(), upY)) {
+                        Toast.makeText(getContext(), "点击了一个弹幕:" + entity.title, Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 
     @Override
