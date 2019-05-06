@@ -201,7 +201,7 @@ public class Controller implements Runnable {
         } catch (Exception e) {
             LogUtil.i(e.getMessage());
         } finally {
-            if (canvas != null) {
+            if (canvas != null && isRunning) {
                 mSurfaceProxy.unlockCanvasAndPost(canvas);
             }
         }
@@ -394,6 +394,7 @@ public class Controller implements Runnable {
     }
 
     public void prepare() {
+        if (isRunning) return;
         if (isPause) {
             isPause = false;
             isRunning = true;
