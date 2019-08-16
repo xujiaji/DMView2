@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DMView2.iml" filepath="$PROJECT_DIR$/DMView2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/dmlib2/dmlib2.iml" filepath="$PROJECT_DIR$/dmlib2/dmlib2.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AndroidStudioProjects-DMView2.iml" filepath="$PROJECT_DIR$/AndroidStudioProjects-DMView2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DMView2.iml" filepath="$PROJECT_DIR$/DMView2.iml" group="DMView2" />
+      <module fileurl="file://$PROJECT_DIR$/dmlib2/DMView2-dmlib2.iml" filepath="$PROJECT_DIR$/dmlib2/DMView2-dmlib2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/DMView2-sample.iml" filepath="$PROJECT_DIR$/sample/DMView2-sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dmlib2/dmlib2.iml" filepath="$PROJECT_DIR$/dmlib2/dmlib2.iml" group="DMView2/dmlib2" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" group="DMView2/sample" />
     </modules>
   </component>
 </project>

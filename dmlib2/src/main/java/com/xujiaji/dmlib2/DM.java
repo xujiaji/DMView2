@@ -15,7 +15,7 @@ package com.xujiaji.dmlib2;
  * limitations under the License.
  */
 
-import com.xujiaji.dmlib2.widget.Controller;
+import com.xujiaji.dmlib2.control.Controller;
 
 /**
  * 弹幕接口

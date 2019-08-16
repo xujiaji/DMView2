@@ -32,10 +32,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MainActivity extends AppCompatActivity {
 
     private DMSurfaceView dmSurfaceView;
-    private DMSurfaceView dmAnnouncement;
-    private DMSurfaceView dmAnnouncement2;
-    private DMSurfaceView dmAnnouncement3;
-    private DMSurfaceView dmAnnouncement4;
+//    private DMSurfaceView dmAnnouncement;
+//    private DMSurfaceView dmAnnouncement2;
+//    private DMSurfaceView dmAnnouncement3;
+//    private DMSurfaceView dmAnnouncement4;
     private CheckBox checkBox;
     private final Handler handler = new Handler();
 
@@ -46,14 +46,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dmSurfaceView = findViewById(R.id.dmView);
-        dmAnnouncement = findViewById(R.id.dmAnnouncement);
-        dmAnnouncement2 = findViewById(R.id.dmAnnouncement2);
-        dmAnnouncement3 = findViewById(R.id.dmAnnouncement3);
-        dmAnnouncement4 = findViewById(R.id.dmAnnouncement4);
+//        dmAnnouncement = findViewById(R.id.dmAnnouncement);
+//        dmAnnouncement2 = findViewById(R.id.dmAnnouncement2);
+//        dmAnnouncement3 = findViewById(R.id.dmAnnouncement3);
+//        dmAnnouncement4 = findViewById(R.id.dmAnnouncement4);
 
         checkBox = findViewById(R.id.checkbox);
 
-        dmSurfaceView.getController().setOnDMAddListener(new OnDMAddListener() {
+        dmSurfaceView.setOnDMAddListener(new OnDMAddListener() {
             @Override
             public void added(BaseDmEntity dmEntity) {
 
@@ -72,10 +72,10 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         LogUtil.e("MainActivity onPause()");
         dmSurfaceView.getController().pause();
-        dmAnnouncement.getController().pause();
-        dmAnnouncement2.getController().pause();
-        dmAnnouncement3.getController().pause();
-        dmAnnouncement4.getController().pause();
+//        dmAnnouncement.getController().pause();
+//        dmAnnouncement2.getController().pause();
+//        dmAnnouncement3.getController().pause();
+//        dmAnnouncement4.getController().pause();
         if (runnable != null) {
             handler.removeCallbacks(runnable);
             runnable = null;
@@ -83,26 +83,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickAddDM(View view) {
-        dmAnnouncement.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_text, null));
-
-        dmAnnouncement.getController().setOnDMAddListener(new OnDMAddListener() {
-            @Override
-            public void added(BaseDmEntity dmEntity) {
-                dmAnnouncement.getController().add(LayoutInflater.from(MainActivity.this).inflate(R.layout.announcement_text, null));
-            }
-
-            @Override
-            public void addedAll() {
-
-            }
-        });
-
-
-        dmAnnouncement2.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_text, null));
-
-        dmAnnouncement3.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_image_text, null));
-
-        dmAnnouncement4.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_image_text, null));
+//        dmAnnouncement.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_text, null));
+//
+//        dmAnnouncement.getController().setOnDMAddListener(new OnDMAddListener() {
+//            @Override
+//            public void added(BaseDmEntity dmEntity) {
+//                dmAnnouncement.getController().add(LayoutInflater.from(MainActivity.this).inflate(R.layout.announcement_text, null));
+//            }
+//
+//            @Override
+//            public void addedAll() {
+//
+//            }
+//        });
+//
+//
+//        dmAnnouncement2.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_text, null));
+//
+//        dmAnnouncement3.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_image_text, null));
+//
+//        dmAnnouncement4.getController().add(LayoutInflater.from(this).inflate(R.layout.announcement_image_text, null));
 
         addDM("小明1", "一条消息abcdefghijklmnopqrstuvwxyz123456789 一条消息abcdefghijklmnopqrstuvwxyz123456789 ", "https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3512331237,2033775251&fm=27&gp=0.jpg");
         addDM("小明2", "消息2 sdaf", "https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=1881776517,987084327&fm=27&gp=0.jpg");
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onClickClearScreen(View view) {
-        dmSurfaceView.getController().destroy();
+        dmSurfaceView.getController().clean();
     }
 
     private static class ViewHolder {

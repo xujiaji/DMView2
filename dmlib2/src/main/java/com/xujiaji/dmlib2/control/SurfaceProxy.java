@@ -1,4 +1,4 @@
-package com.xujiaji.dmlib2;
+package com.xujiaji.dmlib2.control;
 /*
  * Copyright 2018 xujiaji
  *
@@ -33,10 +33,8 @@ public class SurfaceProxy {
 
     public Canvas lockCanvas() {
         if (mSurfaceHolder != null) {
-            if (Thread.currentThread().isInterrupted()) return null;
             return mSurfaceHolder.lockCanvas();
         } else {
-            if (Thread.currentThread().isInterrupted()) return null;
             return mSurface.lockCanvas(null);
         }
     }

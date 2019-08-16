@@ -26,8 +26,10 @@ import com.xujiaji.dmlib2.DM;
 import com.xujiaji.dmlib2.Direction;
 import com.xujiaji.dmlib2.LogUtil;
 import com.xujiaji.dmlib2.R;
-import com.xujiaji.dmlib2.SurfaceProxy;
+import com.xujiaji.dmlib2.callback.OnDMAddListener;
+import com.xujiaji.dmlib2.control.SurfaceProxy;
 import com.xujiaji.dmlib2.Util;
+import com.xujiaji.dmlib2.control.Controller;
 
 /**
  * 用SurfaceView实现弹幕
@@ -39,6 +41,8 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
     private Controller mController;
     private int mWidth;
     private int mHeight;
+    private Controller.Builder builder;
+
 
     public DMSurfaceView(Context context) {
         this(context, null);
@@ -50,7 +54,6 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     public DMSurfaceView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mController = new Controller();
         initHolder();
 
         TypedArray a                = context.obtainStyledAttributes(attrs, R.styleable.DMSurfaceView, defStyleAttr, 0);
@@ -62,13 +65,15 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         final int vSpace            = a.getDimensionPixelOffset(R.styleable.DMSurfaceView_dm_v_space, Util.dp2px(context, 10));
         final int hSpace            = a.getDimensionPixelOffset(R.styleable.DMSurfaceView_dm_h_space, Util.dp2px(context, 10));
 
-        a.recycle();
+        builder = new Controller.Builder()
+                .setDirection(direction)
+                .setSpan(span)
+                .setSleep(sleep)
+                .setSpanTime(spanTime)
+                .sethSpace(hSpace)
+                .setvSpace(vSpace);
 
-        mController.setDirection(direction);
-        mController.sethSpace(hSpace);
-        mController.setvSpace(vSpace);
-        mController.setSpan(span);
-        mController.setSpanTime(spanTime == 0 ? sleep : spanTime);
+        a.recycle();
     }
 
     private void initHolder() {
@@ -80,15 +85,24 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mController.prepare();
+
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         if (mWidth == width && mHeight == height) return;
+        if (mController != null) {
+            mController.destroy();
+        }
         this.mWidth = width;
         this.mHeight = height;
-        mController.init(width, height, new SurfaceProxy(mSurfaceHolder));
+        mController =
+                builder.setSurfaceProxy(new SurfaceProxy(mSurfaceHolder))
+                        .setWidth(mWidth)
+                        .setHeight(mHeight)
+
+                        .build();
+        mController.start();
     }
 
     @Override
@@ -96,7 +110,7 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
         super.onWindowFocusChanged(hasWindowFocus);
         LogUtil.e("DMSurfaceView onWindowFocusChanged() - > " + hasWindowFocus);
         if (hasWindowFocus) {
-            mController.prepare();
+            mController.resume();
         }
         else {
             mController.pause();
@@ -105,15 +119,17 @@ public class DMSurfaceView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        LogUtil.e("DMSurfaceView surfaceDestroyed()");
-        mController.pause();
+        mController.destroy();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        LogUtil.e("DMSurfaceView onDetachedFromWindow()");
-        mController.destroy();
+        mController.pause();
+    }
+
+    public void setOnDMAddListener(OnDMAddListener l) {
+        builder.setOnDMAddListener(l);
     }
 
     @Override

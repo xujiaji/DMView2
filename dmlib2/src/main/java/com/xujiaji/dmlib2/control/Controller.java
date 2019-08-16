@@ -1,4 +1,4 @@
-package com.xujiaji.dmlib2.widget;
+package com.xujiaji.dmlib2.control;
 /*
  * Copyright 2018 xujiaji
  *
@@ -23,37 +23,33 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.View;
-
 import com.xujiaji.dmlib2.Direction;
 import com.xujiaji.dmlib2.LogUtil;
-import com.xujiaji.dmlib2.SurfaceProxy;
 import com.xujiaji.dmlib2.callback.OnDMAddListener;
 import com.xujiaji.dmlib2.callback.ViewCreator;
 import com.xujiaji.dmlib2.entity.BaseDmEntity;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
  * 动画路径绘制登帮助类
  */
-public class Controller implements Runnable {
+public class Controller {
     private Direction mDirection = Direction.RIGHT_LEFT;
     // 新弹幕
-    private Queue<BaseDmEntity> mNewDMQueue = new LinkedList<>();
+    private Queue<BaseDmEntity> mNewDMQueue = new ConcurrentLinkedQueue<>();
     // 已添加到屏幕的弹幕
-    private List<BaseDmEntity> mAddedMDList = new LinkedList<>();
-    private SurfaceProxy mSurfaceProxy;
+    private Queue<BaseDmEntity> mAddedMDList = new ConcurrentLinkedQueue<>();
     private int mWidth, mHeight;
     private float offset;
     private int hSpace = 20;// 水平间距
     private int vSpace = 20;// 垂直间距
-    private volatile boolean isRunning;
-    private volatile boolean isPause;// 是否是暂停状态
     private float span = 5F;// 刷新一次的跨度
     private int spanTime = 0; // 一个跨度需要多少时间
     private float speed = 0F; //速度
@@ -61,21 +57,23 @@ public class Controller implements Runnable {
     private ExecutorService exec = Executors.newCachedThreadPool();
     private OnDMAddListener mOnDMAddListener;
     private Handler mMainHandler;
-    private Thread mThread;
+    private DrawThread mDrawThread;
 
-    /**
-     * @param width        画布登宽
-     * @param height       画布的高
-     * @param surfaceProxy 代理surface
-     */
-    void init(int width, int height, SurfaceProxy surfaceProxy) {
-        mSurfaceProxy = surfaceProxy;
+    private Controller() {
+
+    }
+
+    public void setSurfaceProxy(SurfaceProxy surfaceProxy) {
+        mDrawThread = new DrawThread(surfaceProxy);
+    }
+
+    public void setSize(int width, int height) {
         this.mWidth = width;
         this.mHeight = height;
         initOffset();
     }
 
-    void initOffset() {
+    public void initOffset() {
         switch (mDirection) {
             case RIGHT_LEFT:
                 offset = mWidth;
@@ -94,6 +92,17 @@ public class Controller implements Runnable {
         updateSpeed();
     }
 
+    public void start() {
+        if (mDrawThread.isRun()) return;
+        mDrawThread.setOnDrawListener(new DrawThread.OnDrawListener() {
+            @Override
+            public void onDraw(Canvas canvas) {
+                runTask(canvas);
+            }
+        });
+        mDrawThread.start();
+    }
+
     private Handler getMainHandler() {
         if (mMainHandler == null) {
             return new Handler(Looper.getMainLooper());
@@ -101,16 +110,8 @@ public class Controller implements Runnable {
         return mMainHandler;
     }
 
-    @Override
-    public void run() {
-        while (isRunning) {
-            runTask();
-        }
-    }
-
     private long lastTime = 0L;
-    private void runTask() {
-
+    private void runTask(Canvas canvas) {
         if (spanTime > 0) {
             final long nowTime = SystemClock.uptimeMillis();
             final long disTime = nowTime - lastTime;
@@ -123,12 +124,11 @@ public class Controller implements Runnable {
             offset += span;
         }
 
-        draw(offset, false);
+        drawDM(canvas, offset, false);
         if (addDMInQueue()) {
 
-        }
-        else if (mAddedMDList.size() == 0) {
-            isRunning = false;
+        } else if (mAddedMDList.size() == 0) {
+            mDrawThread.setDraw(false);
             if (mOnDMAddListener != null) {
                 getMainHandler().post(new Runnable() {
                     @Override
@@ -136,76 +136,58 @@ public class Controller implements Runnable {
                         mOnDMAddListener.addedAll();
                     }
                 });
-
             }
         }
     }
 
-    void draw(float value, boolean isOnlyClear) {
-        Canvas canvas = null;
-        try {
-            canvas = mSurfaceProxy.lockCanvas();
-            if (canvas == null) {
-//                mValueAnim.cancel();
-            } else {
-                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-                if (isOnlyClear) return;
-                canvas.save();
-                if (isH) {
-                    canvas.translate(value, 0);
-                }
-                else {
-                    canvas.translate(0, value);
-                }
-
-                Iterator<BaseDmEntity> iterator = mAddedMDList.iterator();
-                while (iterator.hasNext()) {
-                    BaseDmEntity entity = iterator.next();
-                    boolean removeThisEntity = false;
-                    switch (mDirection) {
-                        case RIGHT_LEFT:
-                            removeThisEntity = offset < -entity.rect.right;
-                            break;
-                        case LEFT_RIGHT:
-                            removeThisEntity = offset > mWidth + entity.rect.right;
-                            break;
-                        case DOWN_UP:
-                            removeThisEntity = offset < -entity.rect.bottom;
-                            break;
-                        case UP_DOWN:
-                            removeThisEntity = offset > mHeight + entity.rect.bottom;
-                            break;
-
-                    }
-                    if (removeThisEntity) {
-                        iterator.remove();
-                    }
-
-                    switch (mDirection) {
-                        case RIGHT_LEFT:
-                        case DOWN_UP:
-                            canvas.drawBitmap(entity.bitmap, entity.rect.left, entity.rect.top, null);
-                            break;
-                        case LEFT_RIGHT:
-                            canvas.drawBitmap(entity.bitmap, -entity.rect.left - entity.rect.width(), entity.rect.top, null);
-                            break;
-                        case UP_DOWN:
-                            canvas.drawBitmap(entity.bitmap, entity.rect.left, -entity.rect.top - entity.rect.height(), null);
-                            break;
-                    }
-
-                }
-
-                canvas.restore();
-            }
-        } catch (Exception e) {
-            LogUtil.i(e.getMessage());
-        } finally {
-            if (canvas != null && isRunning) {
-                mSurfaceProxy.unlockCanvasAndPost(canvas);
-            }
+    private void drawDM(Canvas canvas, float value, boolean isOnlyClear) {
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+        if (isOnlyClear) return;
+        canvas.save();
+        if (isH) {
+            canvas.translate(value, 0);
+        }
+        else {
+            canvas.translate(0, value);
         }
 
+        Iterator<BaseDmEntity> iterator = mAddedMDList.iterator();
+        while (iterator.hasNext()) {
+            BaseDmEntity entity = iterator.next();
+            boolean removeThisEntity = false;
+            switch (mDirection) {
+                case RIGHT_LEFT:
+                    removeThisEntity = offset < -entity.rect.right;
+                    break;
+                case LEFT_RIGHT:
+                    removeThisEntity = offset > mWidth + entity.rect.right;
+                    break;
+                case DOWN_UP:
+                    removeThisEntity = offset < -entity.rect.bottom;
+                    break;
+                case UP_DOWN:
+                    removeThisEntity = offset > mHeight + entity.rect.bottom;
+                    break;
+
+            }
+            if (removeThisEntity) {
+                iterator.remove();
+            }
+
+            switch (mDirection) {
+                case RIGHT_LEFT:
+                case DOWN_UP:
+                    canvas.drawBitmap(entity.bitmap, entity.rect.left, entity.rect.top, null);
+                    break;
+                case LEFT_RIGHT:
+                    canvas.drawBitmap(entity.bitmap, -entity.rect.left - entity.rect.width(), entity.rect.top, null);
+                    break;
+                case UP_DOWN:
+                    canvas.drawBitmap(entity.bitmap, entity.rect.left, -entity.rect.top - entity.rect.height(), null);
+                    break;
+            }
+        }
+        canvas.restore();
     }
 
     public void add(final ViewCreator viewCreater) {
@@ -228,11 +210,12 @@ public class Controller implements Runnable {
         });
     }
 
-    public synchronized void addToQueue(BaseDmEntity entity) {
+    public void addToQueue(BaseDmEntity entity) {
         if (entity == null) throw new RuntimeException("entity cannot null");
         mNewDMQueue.add(entity);
-        if (!isRunning) {
-            start();
+        if (!mDrawThread.isDraw()) {
+            initOffset();
+            mDrawThread.setDraw(true);
         }
     }
 
@@ -330,14 +313,14 @@ public class Controller implements Runnable {
 
             if (isH) {
                 if (lastEntity.rect.right < maxLimit) {
-                    entity.rect.offsetTo((lastEntity.rect.right > minLimit ? lastEntity.rect.right : minLimit) + hSpace, lastEntity.rect.top);
+                    entity.rect.offsetTo((Math.max(lastEntity.rect.right, minLimit)) + hSpace, lastEntity.rect.top);
                     addToDisplay(entity);
                     return true;
                 }
             }
             else {
                 if (lastEntity.rect.bottom < maxLimit) {
-                    entity.rect.offsetTo(lastEntity.rect.left, (lastEntity.rect.bottom > minLimit ? lastEntity.rect.bottom : minLimit) + vSpace);
+                    entity.rect.offsetTo(lastEntity.rect.left, (Math.max(lastEntity.rect.bottom, minLimit)) + vSpace);
                     addToDisplay(entity);
                     return true;
                 }
@@ -385,41 +368,26 @@ public class Controller implements Runnable {
         this.mOnDMAddListener = l;
     }
 
-    public void start() {
-        if (isRunning) return;
-        initOffset();
-        isRunning = true;
-        mThread = new Thread(this);
-        mThread.start();
-    }
-
-    public void prepare() {
-        if (isRunning) return;
-        if (isPause) {
-            isPause = false;
-            isRunning = true;
-            mThread = new Thread(this);
-            mThread.start();
-        }
+    public void resume() {
+        mDrawThread.setDraw(true);
     }
 
     public void pause() {
-        if (mThread != null && !mThread.isInterrupted()) {
-            LogUtil.e("mThread call interrupt()");
-            mThread.interrupt();
-        }
-        isPause = true;
-        isRunning = false;
+        mDrawThread.setDraw(false);
+    }
+
+    public void clean() {
+        mNewDMQueue.clear();
+        mAddedMDList.clear();
+        mDrawThread.setDraw(false);
+        initOffset();
     }
 
     public void destroy() {
+        clean();
         mMainHandler = null;
-        isPause = false;
-        isRunning = false;
-        mNewDMQueue.clear();
-        mAddedMDList.clear();
-        initOffset();
-        draw(0, true);
+        mDrawThread.setRun(false);
+        mDrawThread.interrupt();
     }
 
     public void setDirection(Direction mDirection) {
@@ -449,6 +417,84 @@ public class Controller implements Runnable {
     private void updateSpeed() {
         if (spanTime > 0L && span != 0) {
             speed = span / spanTime;
+        }
+    }
+
+    public static class Builder {
+        private SurfaceProxy surfaceProxy;
+        private Direction direction;
+        private int span;
+        private int sleep;
+        private int spanTime;
+        private int vSpace;
+        private int hSpace;
+        private int width;
+        private int height;
+        private OnDMAddListener mOnDMAddListener;
+
+        public Builder() {
+        }
+
+        public Builder setSurfaceProxy(SurfaceProxy surfaceProxy) {
+            this.surfaceProxy = surfaceProxy;
+            return this;
+        }
+
+        public Builder setDirection(Direction direction) {
+            this.direction = direction;
+            return this;
+        }
+
+        public Builder setSpan(int span) {
+            this.span = span;
+            return this;
+        }
+
+        public Builder setSleep(int sleep) {
+            this.sleep = sleep;
+            return this;
+        }
+
+        public Builder setSpanTime(int spanTime) {
+            this.spanTime = spanTime;
+            return this;
+        }
+
+        public Builder setvSpace(int vSpace) {
+            this.vSpace = vSpace;
+            return this;
+        }
+
+        public Builder sethSpace(int hSpace) {
+            this.hSpace = hSpace;
+            return this;
+        }
+
+        public Builder setWidth(int width) {
+            this.width = width;
+            return this;
+        }
+
+        public Builder setHeight(int height) {
+            this.height = height;
+            return this;
+        }
+
+        public void setOnDMAddListener(OnDMAddListener l) {
+            this.mOnDMAddListener = l;
+        }
+
+        public Controller build() {
+            Controller controller = new Controller();
+            controller.setSurfaceProxy(surfaceProxy);
+            controller.setDirection(direction);
+            controller.setSpan(span);
+            controller.setSpanTime(spanTime == 0 ? sleep : spanTime);
+            controller.setvSpace(vSpace);
+            controller.sethSpace(hSpace);
+            controller.setSize(width, height);
+            controller.setOnDMAddListener(mOnDMAddListener);
+            return controller;
         }
     }
 }
